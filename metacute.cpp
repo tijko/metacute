@@ -32,13 +32,64 @@ Elf::Elf(std::vector<uint8_t> binary)
     elf_class = elf_hdr.e_ident[EI_CLASS];
     elf_endian = elf_hdr.e_ident[EI_DATA];
     elf_osabi = elf_hdr.e_ident[EI_OSABI];
+
+    switch (elf_hdr.e_type) {
+        case (ET_NONE):
+            type = "Unknown";
+            break;
+        case (ET_REL):
+            type = "Relocatable";
+            break;
+        case (ET_EXEC):
+            type = "Executable";
+            break;
+        case (ET_DYN):
+            type = "Shared Object";
+            break;
+        case (ET_CORE):
+            type = "Core";
+            break;
+    }
+
+    switch (elf_hdr.e_machine) {
+        case (EM_NONE):
+            arch = "None";
+            break;
+        case (EM_M32):
+            arch = "AT&T WE 32100";
+            break;
+        case (EM_SPARC):
+            arch = "SUN SPARC";
+            break;
+        case (EM_386):
+            arch = "Intel 80386";
+            break;
+        case (EM_68K):
+            arch = "Motorola m68k";
+            break;
+        case (EM_PPC):
+            arch = "PowerPC";
+            break;
+        case (EM_ARM):
+            arch = "ARM";
+            break;
+        case (EM_X86_64):
+            arch = "x86_64";
+            break;
+        case (EM_PDP10):
+            arch = "PDP-10";
+            break;
+        case (EM_BPF):
+            arch = "Linux BPF";
+            break;
+        default:
+            arch = "Unknown";
+    }
 }
 
 int Elf::check_magic_number(std::vector<uint8_t> binary)
 {
-    char *file_magic_mark[SELFMAG];
-    memcpy(file_magic_mark, binary.data(), SELFMAG);
-    return memcmp(ELFMAG, file_magic_mark, SELFMAG);
+    return memcmp(ELFMAG, binary.data(), SELFMAG);
 }
 
 Section::Section(Elf64_Shdr *section)
@@ -60,18 +111,10 @@ void Section::print_section_hdr(std::string name)
 {
     int sec_offset = sec_hdr.sh_offset;
     int sec_size = sec_hdr.sh_size;
-    std::cout << std::endl;
-    std::cout << SEP;
-    std::cout << std::endl << " Name: " << name;
-    std::cout << " Size: " << std::setbase(10) << sec_size;
-    std::cout << " Offset: " << sec_offset;
-    std::cout << " Type: " << sec_hdr.sh_type << std::endl;
-    std::cout << " Type-Name: " << section_types[sec_hdr.sh_type];
-    std::cout << " Flags: " << sec_hdr.sh_flags;
-    std::cout << " Link: " << sec_hdr.sh_link;
-    std::cout << " Info: " << sec_hdr.sh_info;
-    std::cout << std::endl;
-    std::cout << SEP;
+    printf(SEC_PRINT_FORMAT, name.c_str(), sec_size, sec_offset, 
+                             section_types[sec_hdr.sh_type].c_str(), 
+                             sec_hdr.sh_type, sec_hdr.sh_flags, 
+                             sec_hdr.sh_link, sec_hdr.sh_info);
 }
 
 Meta::Meta(const char *file)
@@ -94,73 +137,11 @@ Meta::Meta(const char *file)
 
 void Meta::print_elf(void)
 {
-    std::cout << SEP << std::endl;
-    std::cout << "File: " << file;
-    std::cout << " Arch: ";
-   
-    switch (elf.elf_hdr.e_machine) {
-        case (EM_NONE):
-            std::cout << "None" << std::endl;
-            break;
-        case (EM_M32):
-            std::cout << "AT&T WE 32100" << std::endl;
-            break;
-        case (EM_SPARC):
-            std::cout << "SUN SPARC" << std::endl;
-            break;
-        case (EM_386):
-            std::cout << "Intel 80386" << std::endl;
-            break;
-        case (EM_68K):
-            std::cout << "Motorola m68k" << std::endl;
-            break;
-        case (EM_PPC):
-            std::cout << "PowerPC" << std::endl;
-            break;
-        case (EM_ARM):
-            std::cout << "ARM" << std::endl;
-            break;
-        case (EM_X86_64):
-            std::cout << "x86_64" << std::endl;
-            break;
-        case (EM_PDP10):
-            std::cout << "PDP-10" << std::endl;
-            break;
-        case (EM_BPF):
-            std::cout << "Linux BPF" << std::endl;
-            break;
-    }
-
-    std::cout << "Endian: " << elf.elf_endian;
-    std::cout << " ABI: " << elf.elf_osabi << std::endl;
-    std::cout << "Type: ";
-
-    switch (elf.elf_hdr.e_type) {
-        case (ET_NONE):
-            std::cout << "Unknown";
-            break;
-        case (ET_REL):
-            std::cout << "Relocatable";
-            break;
-        case (ET_EXEC):
-            std::cout << "Executable";
-            break;
-        case (ET_DYN):
-            std::cout << "Shared Object";
-            break;
-        case (ET_CORE):
-            std::cout << "Core";
-            break;
-    }
-
-    std::cout << " Entry: 0x" << std::setbase(16) << elf.elf_hdr.e_entry;
-    std::cout << std::setbase(0) << std::endl;
-    std::cout << "Size: " << elf.elf_hdr.e_ehsize;
-    std::cout << " Segment-Offset " << elf.elf_hdr.e_phoff;
-    std::cout << " Section-Offset " << elf.elf_hdr.e_shoff << std::endl;
-    std::cout << "Segments: " << elf.elf_hdr.e_phnum;
-    std::cout << " Sections: " << elf.elf_hdr.e_shnum << std::endl;
-    std::cout << SEP << std::endl;
+    printf(ELF_PRINT_FORMAT, file.c_str(), elf.arch.c_str(), elf.type.c_str(),
+                             elf.elf_hdr.e_ehsize, elf.elf_endian, elf.elf_osabi,
+                             elf.elf_hdr.e_entry, elf.elf_hdr.e_phnum, 
+                             elf.elf_hdr.e_shnum, elf.elf_hdr.e_phoff, 
+                             (int) elf.elf_hdr.e_shoff); 
 }
 
 void Meta::load_sections(void)
@@ -215,6 +196,7 @@ void Meta::display_section_chars(int idx, size_t sec_offset, int count)
 
 void Meta::print_sections(void)
 {
+    std::cout << std::endl << "File: " << file << std::endl << std::endl;
     load_sections();
 
     for (const auto& item : sections) {
@@ -252,10 +234,9 @@ void Meta::print_sections(void)
             count++;
         }
 
-        std::cout << std::endl;
+        std::cout << std::endl << std::endl;
         std::cout << std::setw(0);
     }
-
 }
 
 Elf64_Ehdr Meta::get_elf(void)
