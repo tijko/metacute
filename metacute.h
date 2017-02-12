@@ -126,7 +126,6 @@ class Meta {
         std::string file;
         std::vector<uint8_t> binary;
         std::map<std::string, Section *> sections;
-        void load_sections(void);
         void print_sections(void);
         void print_elf(void);
         Elf64_Ehdr get_elf(void);
@@ -134,6 +133,7 @@ class Meta {
     private:
         Elf elf;
         void load_elf(void);
+        void load_sections(void);
         void display_section_chars(int idx, size_t sec_offset, int count);
         std::ifstream file_handle;
 };

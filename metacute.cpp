@@ -94,7 +94,6 @@ Meta::Meta(const char *file)
 
 void Meta::print_elf(void)
 {
-    // Have macro formatted....
     std::cout << elf.elf_endian << std::endl;
     std::cout << elf.elf_osabi << std::endl;
     std::cout << elf.elf_hdr.e_type << std::endl;
@@ -159,6 +158,8 @@ void Meta::display_section_chars(int idx, size_t sec_offset, int count)
 
 void Meta::print_sections(void)
 {
+    load_sections();
+
     for (const auto& item : sections) {
         item.second->print_section_hdr(item.first);
         size_t sec_offset = item.second->sec_hdr.sh_offset;
@@ -213,20 +214,23 @@ int main(int argc, char *argv[])
     const char *options = "esp";
     char opt = getopt(argc, argv, options);
     
+    const char *file = argv[2];
+    Meta metacute(file);
+
     switch (opt) {
 
         case ('e'):
+            metacute.print_elf();
+            break;
+        case ('s'):
+            metacute.print_sections();
+            break;
+        case ('p'):
             break;
         default:
             ERROR("Invalid options!");
     }
 
-    const char *file = argv[2];
-    Meta metacute(file);
-    //metacute.print_elf();
-    metacute.load_sections();
-    // print out strings and size/offsets of sections
-    metacute.print_sections();
 
     return 0;
 }
