@@ -94,16 +94,73 @@ Meta::Meta(const char *file)
 
 void Meta::print_elf(void)
 {
-    std::cout << elf.elf_endian << std::endl;
-    std::cout << elf.elf_osabi << std::endl;
-    std::cout << elf.elf_hdr.e_type << std::endl;
-    std::cout << elf.elf_hdr.e_machine << std::endl;
-    std::cout << elf.elf_hdr.e_entry << std::endl;
-    std::cout << elf.elf_hdr.e_ehsize << std::endl;
-    std::cout << elf.elf_hdr.e_phoff << std::endl;
-    std::cout << elf.elf_hdr.e_shoff << std::endl;
-    std::cout << elf.elf_hdr.e_phnum << std::endl;
-    std::cout << elf.elf_hdr.e_shnum << std::endl;
+    std::cout << SEP << std::endl;
+    std::cout << "File: " << file;
+    std::cout << " Arch: ";
+   
+    switch (elf.elf_hdr.e_machine) {
+        case (EM_NONE):
+            std::cout << "None" << std::endl;
+            break;
+        case (EM_M32):
+            std::cout << "AT&T WE 32100" << std::endl;
+            break;
+        case (EM_SPARC):
+            std::cout << "SUN SPARC" << std::endl;
+            break;
+        case (EM_386):
+            std::cout << "Intel 80386" << std::endl;
+            break;
+        case (EM_68K):
+            std::cout << "Motorola m68k" << std::endl;
+            break;
+        case (EM_PPC):
+            std::cout << "PowerPC" << std::endl;
+            break;
+        case (EM_ARM):
+            std::cout << "ARM" << std::endl;
+            break;
+        case (EM_X86_64):
+            std::cout << "x86_64" << std::endl;
+            break;
+        case (EM_PDP10):
+            std::cout << "PDP-10" << std::endl;
+            break;
+        case (EM_BPF):
+            std::cout << "Linux BPF" << std::endl;
+            break;
+    }
+
+    std::cout << "Endian: " << elf.elf_endian;
+    std::cout << " ABI: " << elf.elf_osabi << std::endl;
+    std::cout << "Type: ";
+
+    switch (elf.elf_hdr.e_type) {
+        case (ET_NONE):
+            std::cout << "Unknown";
+            break;
+        case (ET_REL):
+            std::cout << "Relocatable";
+            break;
+        case (ET_EXEC):
+            std::cout << "Executable";
+            break;
+        case (ET_DYN):
+            std::cout << "Shared Object";
+            break;
+        case (ET_CORE):
+            std::cout << "Core";
+            break;
+    }
+
+    std::cout << " Entry: 0x" << std::setbase(16) << elf.elf_hdr.e_entry;
+    std::cout << std::setbase(0) << std::endl;
+    std::cout << "Size: " << elf.elf_hdr.e_ehsize;
+    std::cout << " Segment-Offset " << elf.elf_hdr.e_phoff;
+    std::cout << " Section-Offset " << elf.elf_hdr.e_shoff << std::endl;
+    std::cout << "Segments: " << elf.elf_hdr.e_phnum;
+    std::cout << " Sections: " << elf.elf_hdr.e_shnum << std::endl;
+    std::cout << SEP << std::endl;
 }
 
 void Meta::load_sections(void)
