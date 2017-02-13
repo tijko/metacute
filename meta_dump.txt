@@ -1,13 +1,17 @@
 
+File: out
+
 ------------------------------------------------------------
- Name: .bss Size: 8 Offset: 4160 Type: 8
- Type-Name: SHT_REL Flags: 3 Link: 0 Info: 0
+ Name: .bss	Size: 8	Offset: 4160
+ Type-Name: SHT_REL	Type: 8
+ Flags: 3	Link: 0	Info: 0
 ------------------------------------------------------------
 601040 4743433a 2028474e                   GCC:.(GN
 
 ------------------------------------------------------------
- Name: .comment Size: 52 Offset: 4160 Type: 1
- Type-Name: SHT_SYMTAB Flags: 48 Link: 0 Info: 0
+ Name: .comment	Size: 52	Offset: 4160
+ Type-Name: SHT_SYMTAB	Type: 1
+ Flags: 48	Link: 0	Info: 0
 ------------------------------------------------------------
 xxxxxx 4743433a 2028474e 55292036 2e312e31 GCC:.(GNU).6.1.1
 xxxxxx 20323031 36303830 32004743 433a2028 .20160802.GCC:.(
@@ -15,14 +19,16 @@ xxxxxx 474e5529 20362e33 2e312032 30313730 GNU).6.3.1.20170
 xxxxxx 31303900                            109.
 
 ------------------------------------------------------------
- Name: .data Size: 16 Offset: 4144 Type: 1
- Type-Name: SHT_SYMTAB Flags: 3 Link: 0 Info: 0
+ Name: .data	Size: 16	Offset: 4144
+ Type-Name: SHT_SYMTAB	Type: 1
+ Flags: 3	Link: 0	Info: 0
 ------------------------------------------------------------
 601030 00000000 00000000 00000000 00000000 ................
 
 ------------------------------------------------------------
- Name: .debug_abbrev Size: 258 Offset: 5128 Type: 1
- Type-Name: SHT_SYMTAB Flags: 0 Link: 0 Info: 0
+ Name: .debug_abbrev	Size: 258	Offset: 5128
+ Type-Name: SHT_SYMTAB	Type: 1
+ Flags: 0	Link: 0	Info: 0
 ------------------------------------------------------------
 xxxxxx 01110125 0e130b03 0e1b0e11 01120710 ...%............
 xxxxxx 17000002 1600030e 3a0b3b0b 49130000 ........:.;.I...
@@ -43,16 +49,18 @@ xxxxxx 00001434 00030e3a 0b3b0b49 13021800 ...4...:.;.I....
 xxxxxx 0000                                ..
 
 ------------------------------------------------------------
- Name: .debug_aranges Size: 48 Offset: 4212 Type: 1
- Type-Name: SHT_SYMTAB Flags: 0 Link: 0 Info: 0
+ Name: .debug_aranges	Size: 48	Offset: 4212
+ Type-Name: SHT_SYMTAB	Type: 1
+ Flags: 0	Link: 0	Info: 0
 ------------------------------------------------------------
 xxxxxx 2c000000 02000000 00000800 00000000 ,...............
 xxxxxx 96054000 00000000 56000000 00000000 ..@.....V.......
 xxxxxx 00000000 00000000 00000000 00000000 ................
 
 ------------------------------------------------------------
- Name: .debug_info Size: 868 Offset: 4260 Type: 1
- Type-Name: SHT_SYMTAB Flags: 0 Link: 0 Info: 0
+ Name: .debug_info	Size: 868	Offset: 4260
+ Type-Name: SHT_SYMTAB	Type: 1
+ Flags: 0	Link: 0	Info: 0
 ------------------------------------------------------------
 xxxxxx 60030000 04000000 00000801 89010000 `...............
 xxxxxx 0c2d0000 00500100 00960540 00000000 .-...P.....@....
@@ -111,8 +119,9 @@ xxxxxx 02000001 078f0000 00029168 0006088f ...........h....
 xxxxxx 00000000                            ....
 
 ------------------------------------------------------------
- Name: .debug_line Size: 213 Offset: 5386 Type: 1
- Type-Name: SHT_SYMTAB Flags: 0 Link: 0 Info: 0
+ Name: .debug_line	Size: 213	Offset: 5386
+ Type-Name: SHT_SYMTAB	Type: 1
+ Flags: 0	Link: 0	Info: 0
 ------------------------------------------------------------
 xxxxxx d1000000 0200b300 00000101 fb0e0d00 ................
 xxxxxx 01010101 00000001 0000012f 7573722f .........../usr/
@@ -130,8 +139,9 @@ xxxxxx 96054000 00000000 17e5d702 2613bb59 ..@.........&..Y
 xxxxxx 02020001 01                         .....
 
 ------------------------------------------------------------
- Name: .debug_str Size: 676 Offset: 5599 Type: 1
- Type-Name: SHT_SYMTAB Flags: 48 Link: 0 Info: 0
+ Name: .debug_str	Size: 676	Offset: 5599
+ Type-Name: SHT_SYMTAB	Type: 1
+ Flags: 48	Link: 0	Info: 0
 ------------------------------------------------------------
 xxxxxx 5f5f6f66 665f7400 5f494f5f 72656164 __off_t._IO_read
 xxxxxx 5f707472 005f6368 61696e00 73697a65 _ptr._chain.size
@@ -178,8 +188,9 @@ xxxxxx 6d61696e 005f494f 5f777269 74655f62 main._IO_write_b
 xxxxxx 61736500                            ase.
 
 ------------------------------------------------------------
- Name: .dynamic Size: 464 Offset: 3616 Type: 6
- Type-Name: SHT_NOTE Flags: 3 Link: 6 Info: 0
+ Name: .dynamic	Size: 464	Offset: 3616
+ Type-Name: SHT_NOTE	Type: 6
+ Flags: 3	Link: 6	Info: 0
 ------------------------------------------------------------
 600e20 01000000 00000000 01000000 00000000 ................
 600e30 0c000000 00000000 40044000 00000000 ........@.@.....
@@ -212,8 +223,9 @@ xxxxxx 61736500                            ase.
 600fe0 00000000 00000000 00000000 00000000 ................
 
 ------------------------------------------------------------
- Name: .dynstr Size: 77 Offset: 840 Type: 3
- Type-Name: SHT_RELA Flags: 2 Link: 0 Info: 0
+ Name: .dynstr	Size: 77	Offset: 840
+ Type-Name: SHT_RELA	Type: 3
+ Flags: 2	Link: 0	Info: 0
 ------------------------------------------------------------
 400348 006c6962 632e736f 2e360070 75747300 .libc.so.6.puts.
 400358 6d616c6c 6f63005f 5f6c6962 635f7374 malloc.__libc_st
@@ -222,8 +234,9 @@ xxxxxx 61736500                            ase.
 400388 00474c49 42435f32 2e322e35 00       .GLIBC_2.2.5.
 
 ------------------------------------------------------------
- Name: .dynsym Size: 144 Offset: 696 Type: 11
- Type-Name: SHT_INIT_ARRAY Flags: 2 Link: 6 Info: 1
+ Name: .dynsym	Size: 144	Offset: 696
+ Type-Name: SHT_INIT_ARRAY	Type: 11
+ Flags: 2	Link: 6	Info: 1
 ------------------------------------------------------------
 4002b8 00000000 00000000 00000000 00000000 ................
 4002c8 00000000 00000000 0b000000 12000000 ................
@@ -236,8 +249,9 @@ xxxxxx 61736500                            ase.
 400338 00000000 00000000 00000000 00000000 ................
 
 ------------------------------------------------------------
- Name: .eh_frame Size: 244 Offset: 1712 Type: 1
- Type-Name: SHT_SYMTAB Flags: 2 Link: 0 Info: 0
+ Name: .eh_frame	Size: 244	Offset: 1712
+ Type-Name: SHT_SYMTAB	Type: 1
+ Flags: 2	Link: 0	Info: 0
 ------------------------------------------------------------
 4006b0 14000000 00000000 017a5200 01781001 .........zR..x..
 4006c0 1b0c0708 90010710 14000000 1c000000 ................
@@ -257,8 +271,9 @@ xxxxxx 61736500                            ase.
 4007a0 00000000                            ....
 
 ------------------------------------------------------------
- Name: .eh_frame_hdr Size: 52 Offset: 1660 Type: 1
- Type-Name: SHT_SYMTAB Flags: 2 Link: 0 Info: 0
+ Name: .eh_frame_hdr	Size: 52	Offset: 1660
+ Type-Name: SHT_SYMTAB	Type: 1
+ Flags: 2	Link: 0	Info: 0
 ------------------------------------------------------------
 40067c 011b033b 30000000 05000000 e4fdffff ...;0...........
 40068c 7c000000 24feffff 4c000000 1affffff |...$...L.......
@@ -266,95 +281,109 @@ xxxxxx 61736500                            ase.
 4006ac 0c010000                            ....
 
 ------------------------------------------------------------
- Name: .fini Size: 9 Offset: 1636 Type: 1
- Type-Name: SHT_SYMTAB Flags: 6 Link: 0 Info: 0
+ Name: .fini	Size: 9	Offset: 1636
+ Type-Name: SHT_SYMTAB	Type: 1
+ Flags: 6	Link: 0	Info: 0
 ------------------------------------------------------------
 400664 4883ec08 4883c408 c3                H...H....
 
 ------------------------------------------------------------
- Name: .fini_array Size: 8 Offset: 3600 Type: 15
- Type-Name: SHT_PREINIT_ARRAY Flags: 3 Link: 0 Info: 0
+ Name: .fini_array	Size: 8	Offset: 3600
+ Type-Name: SHT_PREINIT_ARRAY	Type: 15
+ Flags: 3	Link: 0	Info: 0
 ------------------------------------------------------------
 600e10 50054000 00000000                   P.@.....
 
 ------------------------------------------------------------
- Name: .gnu.hash Size: 28 Offset: 664 Type: 1879048182
- Type-Name: SHT_GNU_LIBLIST Flags: 2 Link: 5 Info: 0
+ Name: .gnu.hash	Size: 28	Offset: 664
+ Type-Name: SHT_GNU_LIBLIST	Type: 1879048182
+ Flags: 2	Link: 5	Info: 0
 ------------------------------------------------------------
 400298 01000000 01000000 01000000 00000000 ................
 4002a8 00000000 00000000 00000000          ............
 
 ------------------------------------------------------------
- Name: .gnu.version Size: 12 Offset: 918 Type: 1879048191
- Type-Name: SHT_LOPROC Flags: 2 Link: 5 Info: 0
+ Name: .gnu.version	Size: 12	Offset: 918
+ Type-Name: SHT_LOPROC	Type: 1879048191
+ Flags: 2	Link: 5	Info: 0
 ------------------------------------------------------------
 400396 00000200 02000200 00000200          ............
 
 ------------------------------------------------------------
- Name: .gnu.version_r Size: 32 Offset: 936 Type: 1879048190
- Type-Name:  Flags: 2 Link: 6 Info: 1
+ Name: .gnu.version_r	Size: 32	Offset: 936
+ Type-Name: 	Type: 1879048190
+ Flags: 2	Link: 6	Info: 1
 ------------------------------------------------------------
 4003a8 01000100 01000000 10000000 00000000 ................
 4003b8 751a6909 00000200 41000000 00000000 u.i.....A.......
 
 ------------------------------------------------------------
- Name: .got Size: 16 Offset: 4080 Type: 1
- Type-Name: SHT_SYMTAB Flags: 3 Link: 0 Info: 0
+ Name: .got	Size: 16	Offset: 4080
+ Type-Name: SHT_SYMTAB	Type: 1
+ Flags: 3	Link: 0	Info: 0
 ------------------------------------------------------------
 600ff0 00000000 00000000 00000000 00000000 ................
 
 ------------------------------------------------------------
- Name: .got.plt Size: 48 Offset: 4096 Type: 1
- Type-Name: SHT_SYMTAB Flags: 3 Link: 0 Info: 0
+ Name: .got.plt	Size: 48	Offset: 4096
+ Type-Name: SHT_SYMTAB	Type: 1
+ Flags: 3	Link: 0	Info: 0
 ------------------------------------------------------------
 601000 200e6000 00000000 00000000 00000000 ..`.............
 601010 00000000 00000000 76044000 00000000 ........v.@.....
 601020 86044000 00000000 96044000 00000000 ..@.......@.....
 
 ------------------------------------------------------------
- Name: .init Size: 23 Offset: 1088 Type: 1
- Type-Name: SHT_SYMTAB Flags: 6 Link: 0 Info: 0
+ Name: .init	Size: 23	Offset: 1088
+ Type-Name: SHT_SYMTAB	Type: 1
+ Flags: 6	Link: 0	Info: 0
 ------------------------------------------------------------
 400440 4883ec08 488b05ad 0b200048 85c07402 H...H......H..t.
 400450 ffd04883 c408c3                     ..H....
 
 ------------------------------------------------------------
- Name: .init_array Size: 8 Offset: 3592 Type: 14
- Type-Name: SHT_FINI_ARRAY Flags: 3 Link: 0 Info: 0
+ Name: .init_array	Size: 8	Offset: 3592
+ Type-Name: SHT_FINI_ARRAY	Type: 14
+ Flags: 3	Link: 0	Info: 0
 ------------------------------------------------------------
 600e08 70054000 00000000                   p.@.....
 
 ------------------------------------------------------------
- Name: .interp Size: 28 Offset: 568 Type: 1
- Type-Name: SHT_SYMTAB Flags: 2 Link: 0 Info: 0
+ Name: .interp	Size: 28	Offset: 568
+ Type-Name: SHT_SYMTAB	Type: 1
+ Flags: 2	Link: 0	Info: 0
 ------------------------------------------------------------
 400238 2f6c6962 36342f6c 642d6c69 6e75782d /lib64/ld-linux-
 400248 7838362d 36342e73 6f2e3200          x86-64.so.2.
 
 ------------------------------------------------------------
- Name: .jcr Size: 8 Offset: 3608 Type: 1
- Type-Name: SHT_SYMTAB Flags: 3 Link: 0 Info: 0
+ Name: .jcr	Size: 8	Offset: 3608
+ Type-Name: SHT_SYMTAB	Type: 1
+ Flags: 3	Link: 0	Info: 0
 ------------------------------------------------------------
 600e18 00000000 00000000                   ........
 
 ------------------------------------------------------------
- Name: .note.ABI-tag Size: 32 Offset: 596 Type: 7
- Type-Name: SHT_NOBITS Flags: 2 Link: 0 Info: 0
+ Name: .note.ABI-tag	Size: 32	Offset: 596
+ Type-Name: SHT_NOBITS	Type: 7
+ Flags: 2	Link: 0	Info: 0
 ------------------------------------------------------------
 400254 04000000 10000000 01000000 474e5500 ............GNU.
 400264 00000000 02000000 06000000 20000000 ................
 
 ------------------------------------------------------------
- Name: .note.gnu.build-id Size: 36 Offset: 628 Type: 7
- Type-Name: SHT_NOBITS Flags: 2 Link: 0 Info: 0
+ Name: .note.gnu.build-id	Size: 36	Offset: 628
+ Type-Name: SHT_NOBITS	Type: 7
+ Flags: 2	Link: 0	Info: 0
 ------------------------------------------------------------
 400274 04000000 14000000 03000000 474e5500 ............GNU.
 400284 59a2adcf 450f9269 aee0c7c2 ab34b469 Y...E..i.....4.i
 400294 97397732                            .9w2
 
 ------------------------------------------------------------
- Name: .plt Size: 64 Offset: 1120 Type: 1
- Type-Name: SHT_SYMTAB Flags: 6 Link: 0 Info: 0
+ Name: .plt	Size: 64	Offset: 1120
+ Type-Name: SHT_SYMTAB	Type: 1
+ Flags: 6	Link: 0	Info: 0
 ------------------------------------------------------------
 400460 ff35a20b 2000ff25 a40b2000 0f1f4000 .5.....%......@.
 400470 ff25a20b 20006800 000000e9 e0ffffff .%....h.........
@@ -362,16 +391,18 @@ xxxxxx 61736500                            ase.
 400490 ff25920b 20006802 000000e9 c0ffffff .%....h.........
 
 ------------------------------------------------------------
- Name: .rela.dyn Size: 48 Offset: 968 Type: 4
- Type-Name: SHT_HASH Flags: 2 Link: 5 Info: 0
+ Name: .rela.dyn	Size: 48	Offset: 968
+ Type-Name: SHT_HASH	Type: 4
+ Flags: 2	Link: 5	Info: 0
 ------------------------------------------------------------
 4003c8 f00f6000 00000000 06000000 03000000 ..`.............
 4003d8 00000000 00000000 f80f6000 00000000 ..........`.....
 4003e8 06000000 04000000 00000000 00000000 ................
 
 ------------------------------------------------------------
- Name: .rela.plt Size: 72 Offset: 1016 Type: 4
- Type-Name: SHT_HASH Flags: 66 Link: 5 Info: 23
+ Name: .rela.plt	Size: 72	Offset: 1016
+ Type-Name: SHT_HASH	Type: 4
+ Flags: 66	Link: 5	Info: 23
 ------------------------------------------------------------
 4003f8 18106000 00000000 07000000 01000000 ..`.............
 400408 00000000 00000000 20106000 00000000 ..........`.....
@@ -380,14 +411,16 @@ xxxxxx 61736500                            ase.
 400438 00000000 00000000                   ........
 
 ------------------------------------------------------------
- Name: .rodata Size: 11 Offset: 1648 Type: 1
- Type-Name: SHT_SYMTAB Flags: 2 Link: 0 Info: 0
+ Name: .rodata	Size: 11	Offset: 1648
+ Type-Name: SHT_SYMTAB	Type: 1
+ Flags: 2	Link: 0	Info: 0
 ------------------------------------------------------------
 400670 01000200 25252564 256300            ....%%%d%c.
 
 ------------------------------------------------------------
- Name: .shstrtab Size: 328 Offset: 8500 Type: 3
- Type-Name: SHT_RELA Flags: 0 Link: 0 Info: 0
+ Name: .shstrtab	Size: 328	Offset: 8500
+ Type-Name: SHT_RELA	Type: 3
+ Flags: 0	Link: 0	Info: 0
 ------------------------------------------------------------
 xxxxxx 002e7379 6d746162 002e7374 72746162 ..symtab..strtab
 xxxxxx 002e7368 73747274 6162002e 696e7465 ..shstrtab..inte
@@ -412,8 +445,9 @@ xxxxxx 002e6465 6275675f 6c696e65 002e6465 ..debug_line..de
 xxxxxx 6275675f 73747200                   bug_str.
 
 ------------------------------------------------------------
- Name: .strtab Size: 516 Offset: 7984 Type: 3
- Type-Name: SHT_RELA Flags: 0 Link: 0 Info: 0
+ Name: .strtab	Size: 516	Offset: 7984
+ Type-Name: SHT_RELA	Type: 3
+ Flags: 0	Link: 0	Info: 0
 ------------------------------------------------------------
 xxxxxx 00696e69 742e6300 63727473 74756666 .init.c.crtstuff
 xxxxxx 2e63005f 5f4a4352 5f4c4953 545f5f00 .c.__JCR_LIST__.
@@ -450,8 +484,9 @@ xxxxxx 7274006d 61696e00 5f5f544d 435f454e rt.main.__TMC_EN
 xxxxxx 445f5f00                            D__.
 
 ------------------------------------------------------------
- Name: .symtab Size: 1704 Offset: 6280 Type: 2
- Type-Name: SHT_STRTAB Flags: 0 Link: 34 Info: 52
+ Name: .symtab	Size: 1704	Offset: 6280
+ Type-Name: SHT_STRTAB	Type: 2
+ Flags: 0	Link: 34	Info: 52
 ------------------------------------------------------------
 xxxxxx 00000000 00000000 00000000 00000000 ................
 xxxxxx 00000000 00000000 00000000 03000100 ................
@@ -562,8 +597,9 @@ xxxxxx cd010000 12000b00 40044000 00000000 ........@.@.....
 xxxxxx 00000000 00000000                   ........
 
 ------------------------------------------------------------
- Name: .text Size: 450 Offset: 1184 Type: 1
- Type-Name: SHT_SYMTAB Flags: 6 Link: 0 Info: 0
+ Name: .text	Size: 450	Offset: 1184
+ Type-Name: SHT_SYMTAB	Type: 1
+ Flags: 6	Link: 0	Info: 0
 ------------------------------------------------------------
 4004a0 31ed4989 d15e4889 e24883e4 f0505449 1.I..^H..H...PTI
 4004b0 c7c06006 400048c7 c1f00540 0048c7c7 ..`.@.H....@.H..
@@ -594,3 +630,4 @@ xxxxxx 00000000 00000000                   ........
 400640 014839dd 75ea4883 c4085b5d 415c415d .H9.u.H...[]A\A]
 400650 415e415f c390662e 0f1f8400 00000000 A^A_..f.........
 400660 f3c3                                ..
+
