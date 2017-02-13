@@ -133,7 +133,7 @@ class Section {
 class Meta {
 
     public:
-        Meta(const char *file);
+        Meta(const char *file, size_t file_size);
         std::string file;
         std::vector<uint8_t> binary;
         std::map<std::string, Section *> sections;

@@ -117,18 +117,15 @@ void Section::print_section_hdr(std::string name)
                              sec_hdr.sh_link, sec_hdr.sh_info);
 }
 
-Meta::Meta(const char *file)
+Meta::Meta(const char *file, size_t file_size)
 {
     this->file = file;
     // Return errno on failure
     // (e.g. doesn't exist, privileged cap, invalid file attrs)
     file_handle.open(file, std::ios::binary | std::ios::in);
     // if file_handle.is_open() or just not
-    
-    struct stat st;
-    stat(file, &st);
-    binary.resize(st.st_size);
-    file_handle.read((char *) &binary[0], st.st_size);
+    binary.resize(file_size);
+    file_handle.read((char *) &binary[0], file_size);
     // check for bytes actually read...
     file_handle.close();
 
@@ -246,14 +243,19 @@ Elf64_Ehdr Meta::get_elf(void)
 
 int main(int argc, char *argv[])
 {
-    if (argc > 3)
+    if (argc ^ 3)
         ERROR("Invalid options!");
 
     const char *options = "esp";
     char opt = getopt(argc, argv, options);
     
     const char *file = argv[2];
-    Meta metacute(file);
+    
+    struct stat st;
+    if (stat(file, &st) < 0)
+        ERROR(strerror(errno));
+
+    Meta metacute(file, st.st_size);
 
     switch (opt) {
 
