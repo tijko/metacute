@@ -16,13 +16,13 @@
 
 #define ELF_PRINT_FORMAT "------------------------------------------------------------\n" \
                          "File: %s\tArch: %s\tType: %s\nElf-Size: %d\t"                   \
-                         "Endian: %d\tABI: %d\nEntry: %x\nSegments: %8d\t"                \
-                         "Sections: %8d\nSegment-Offset: %d\tSection-Offset: %d\n"        \
+                         "Endian: %s\nEntry: %11x\nABI: %13d\nSegments: %8u\t"            \
+                         "Sections: %8u\nSegment-Offset: %lu\tSection-Offset: %lu\n"      \
                          "------------------------------------------------------------\n" \
 
 #define SEC_PRINT_FORMAT "------------------------------------------------------------\n" \
-                         " Name: %s\tSize: %d\tOffset: %d\n Type-Name: %s\tType: %d\n"    \
-                         " Flags: %d\tLink: %d\tInfo: %d\n"                               \
+                         " Name: %s\tSize: %lu\tOffset: %lu\n Type-Name: %s\tType: %d\n"  \
+                         " Flags: %lu\tLink: %d\tInfo: %d\n"                              \
                          "------------------------------------------------------------"   \
 
 const unsigned int section_values[] = {
@@ -113,6 +113,7 @@ class Elf {
         int elf_osabi;
         std::string arch;
         std::string type;
+        std::string endian;
 
     private:
         int check_magic_number(std::vector<uint8_t> binary);

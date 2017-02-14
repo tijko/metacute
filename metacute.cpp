@@ -30,7 +30,21 @@ Elf::Elf(std::vector<uint8_t> binary)
     memcpy(&elf_hdr, binary.data(), sizeof(Elf64_Ehdr));
 
     elf_class = elf_hdr.e_ident[EI_CLASS];
+
     elf_endian = elf_hdr.e_ident[EI_DATA];
+
+    switch (elf_endian) {
+        case (ELFDATANONE):
+            endian = "Invalid-Endian";
+            break;
+        case (ELFDATA2MSB):
+            endian = "Big Endian, 2's complement";
+            break;
+        case (ELFDATA2LSB):
+            endian = "Little Endian, 2's complement";
+            break;
+    }
+
     elf_osabi = elf_hdr.e_ident[EI_OSABI];
 
     switch (elf_hdr.e_type) {
@@ -109,12 +123,12 @@ void Section::load_section_types(void)
 
 void Section::print_section_hdr(std::string name)
 {
-    int sec_offset = sec_hdr.sh_offset;
-    int sec_size = sec_hdr.sh_size;
-    printf(SEC_PRINT_FORMAT, name.c_str(), sec_size, sec_offset, 
-                             section_types[sec_hdr.sh_type].c_str(), 
-                             sec_hdr.sh_type, sec_hdr.sh_flags, 
-                             sec_hdr.sh_link, sec_hdr.sh_info);
+    Elf64_Half type = sec_hdr.sh_type;
+
+    printf(SEC_PRINT_FORMAT, name.c_str(), sec_hdr.sh_size, sec_hdr.sh_offset,
+                             section_types[type].c_str(), type,
+                             sec_hdr.sh_flags, sec_hdr.sh_link, 
+                             sec_hdr.sh_info);
 }
 
 Meta::Meta(const char *file, size_t file_size)
@@ -134,11 +148,12 @@ Meta::Meta(const char *file, size_t file_size)
 
 void Meta::print_elf(void)
 {
+    uint32_t addr = (uint32_t) elf.elf_hdr.e_entry;
     printf(ELF_PRINT_FORMAT, file.c_str(), elf.arch.c_str(), elf.type.c_str(),
-                             elf.elf_hdr.e_ehsize, elf.elf_endian, elf.elf_osabi,
-                             elf.elf_hdr.e_entry, elf.elf_hdr.e_phnum, 
+                             elf.elf_hdr.e_ehsize, elf.endian.c_str(), 
+                             addr, elf.elf_osabi, elf.elf_hdr.e_phnum, 
                              elf.elf_hdr.e_shnum, elf.elf_hdr.e_phoff, 
-                             (int) elf.elf_hdr.e_shoff); 
+                             elf.elf_hdr.e_shoff);
 }
 
 void Meta::load_sections(void)
