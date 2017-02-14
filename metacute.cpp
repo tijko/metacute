@@ -123,7 +123,7 @@ void Section::load_section_types(void)
 
 void Section::print_section_hdr(std::string name)
 {
-    Elf64_Half type = sec_hdr.sh_type;
+    Elf64_Word type = sec_hdr.sh_type;
 
     printf(SEC_PRINT_FORMAT, name.c_str(), sec_hdr.sh_size, sec_hdr.sh_offset,
                              section_types[type].c_str(), type,
