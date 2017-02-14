@@ -64,6 +64,7 @@ const unsigned int section_values[] = {
 };
 
 const std::string section_value_names[] = {
+    "SHT_NULL",
     "SHT_PROGBITS",
     "SHT_SYMTAB",
     "SHT_STRTAB",
