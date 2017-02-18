@@ -97,7 +97,7 @@ const std::string section_value_names[] = {
     "SHT_HISUNW",       // These next 3 types share the same value.
     "SHT_HIOS",         // Since I don't need HIOS or HISUNW, I put
     "SHT_GNU_versym",   // them first so they don't intefere with the GNU_versym
-    "SHT_LOPROC",
+    "SHT_LOPROC",       // when building the hash table
     "SHT_HIPROC",
     "SHT_LOUSER",
     "SHT_HIUSER"

@@ -134,13 +134,13 @@ void Section::print_section_hdr(std::string name)
 Meta::Meta(const char *file, size_t file_size)
 {
     this->file = file;
-    // Return errno on failure
-    // (e.g. doesn't exist, privileged cap, invalid file attrs)
     file_handle.open(file, std::ios::binary | std::ios::in);
-    // if file_handle.is_open() or just not
+
+    if (!file_handle.is_open())
+        ERROR(strerror(errno));
+
     binary.resize(file_size);
     file_handle.read((char *) &binary[0], file_size);
-    // check for bytes actually read...
     file_handle.close();
 
     elf = Elf(binary);
