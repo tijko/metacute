@@ -1,4 +1,4 @@
-CPPFLAGS = -g -Wall -Wextra -pedantic
+CXXFLAGS = -g -Wall -Wextra -pedantic
 
 .PHONY: clean install uninstall
 
