@@ -4,7 +4,7 @@ CPPFLAGS = -g -Wall -Wextra -pedantic
 
 
 metacute:*.cpp
-	$(CXX) $< -o $@ $(CPPFLAGS)
+	$(CXX) $< -o $@ $(CXXFLAGS)
 
 clean:
 	rm metacute
