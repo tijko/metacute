@@ -1,12 +1,18 @@
-CC = g++
-CFLAGS = -g -Wall -Wextra -pedantic
+CPPFLAGS = -g -Wall -Wextra -pedantic
+
+.PHONY: clean install uninstall
 
 
 metacute:*.cpp
-	$(CC) $< -o $@ $(CFLAGS)
+	$(CXX) $< -o $@ $(CPPFLAGS)
 
 clean:
 	rm metacute
 
+install:
+	mv metacute /usr/bin
 
-.PHONY: clean
+uninstall:
+	rm /usr/bin/metacute
+
+
