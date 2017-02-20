@@ -108,7 +108,7 @@ int Elf::check_magic_number(std::vector<uint8_t> binary)
 
 Section::Section(Elf64_Shdr *section)
 {
-    memcpy(&sec_hdr, section, sizeof(Elf64_Shdr));
+    memcpy(&sec_hdr, section, SEC_SIZE);
     load_section_types();
 }
 
@@ -126,9 +126,8 @@ void Section::print_section_hdr(std::string name)
     Elf64_Word type = sec_hdr.sh_type;
 
     printf(SEC_PRINT_FORMAT, name.c_str(), sec_hdr.sh_size, sec_hdr.sh_offset,
-                             section_types[type].c_str(), type,
-                             sec_hdr.sh_flags, sec_hdr.sh_link, 
-                             sec_hdr.sh_info);
+                             section_types[type].c_str(),
+                             link.c_str(), info.c_str(), sec_hdr.sh_flags);
 }
 
 Meta::Meta(const char *file, size_t file_size)
@@ -156,26 +155,40 @@ void Meta::print_elf(void)
                              elf.elf_hdr.e_shoff);
 }
 
+std::string Meta::get_section_str(size_t sh_idx, size_t str_tbl_offset)
+{
+    int sh_offset = elf.elf_hdr.e_shoff + (sh_idx * SEC_SIZE);
+    int str_offset = ((Elf64_Shdr *) &binary[sh_offset])->sh_name;
+    return std::string((char *) &binary[str_offset + str_tbl_offset]);
+}
+
 void Meta::load_sections(void)
 {
-    size_t offset = elf.elf_hdr.e_shoff + sizeof(Elf64_Ehdr);
     int num_secs = elf.elf_hdr.e_shnum;
 
-    size_t str_sec_offset = elf.elf_hdr.e_shoff + (elf.elf_hdr.e_shstrndx * 
-                                                        sizeof(Elf64_Shdr));
+    size_t str_sec_offset = elf.elf_hdr.e_shoff + 
+                           (elf.elf_hdr.e_shstrndx * SEC_SIZE);
+    size_t str_tbl_offset = ((Elf64_Shdr *) &binary[str_sec_offset])->sh_offset;
 
-    Elf64_Shdr *str_sec = (Elf64_Shdr *) &binary[str_sec_offset];
+    size_t curr_offset = elf.elf_hdr.e_shoff;
 
-    size_t str_offset = str_sec->sh_offset;
+    // Section-Header Table is 1-based table (not 0)
+    for (int curr_sec_idx=1; curr_sec_idx < num_secs; curr_sec_idx++) {
 
-    for (int curr_sec_idx=0; curr_sec_idx < num_secs - 1; curr_sec_idx++) {
-
-        size_t curr_offset = offset + (curr_sec_idx * sizeof(Elf64_Shdr));
+        curr_offset += SEC_SIZE;
         Elf64_Shdr *section = (Elf64_Shdr *) &binary[curr_offset];
 
         Section *curr_sec = new Section(section);
-        std::string name((char *) &binary[str_offset + 
-                                          curr_sec->sec_hdr.sh_name]);
+
+        curr_sec->link = section->sh_link ? get_section_str(section->sh_link, 
+                                                            str_tbl_offset) : 
+                                                                      "None";
+
+        curr_sec->info = section->sh_info ? get_section_str(section->sh_info, 
+                                                            str_tbl_offset) :
+                                                                      "None";
+
+        std::string name((char *) &binary[str_tbl_offset + section->sh_name]);
         sections[name] = curr_sec;
     }
 }

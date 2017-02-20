@@ -12,6 +12,8 @@
 
 #define ALIGN_SECTION_WIDTH 36
 
+#define SEC_SIZE sizeof(Elf64_Shdr)
+
 #define NUM_SEC_VALS 34
 
 #define ELF_PRINT_FORMAT "------------------------------------------------------------\n" \
@@ -21,8 +23,8 @@
                          "------------------------------------------------------------\n" \
 
 #define SEC_PRINT_FORMAT "------------------------------------------------------------\n" \
-                         " Name: %s\tSize: %lu\tOffset: %lu\n Type-Name: %s\tType: %d\n"  \
-                         " Flags: %lu\tLink: %d\tInfo: %d\n"                              \
+                         " Name: %s\tSize: %lu\tOffset: %lu\n Type: %s\n"                 \
+                         " Link: %s\n Info: %s\n Flags: %lu\n"                             \
                          "------------------------------------------------------------"   \
 
 const unsigned int section_values[] = {
@@ -127,6 +129,8 @@ class Section {
     public:
         Section(Elf64_Shdr *section); 
         Elf64_Shdr sec_hdr;
+        std::string link;
+        std::string info;
         std::map<const unsigned int, std::string> section_types;
         void print_section_hdr(std::string name);
 
@@ -150,6 +154,7 @@ class Meta {
         void load_elf(void);
         void load_sections(void);
         void display_section_chars(int idx, size_t sec_offset, int count);
+        std::string get_section_str(size_t sh_idx, size_t str_tbl_offset);
         std::ifstream file_handle;
 };
 
