@@ -173,6 +173,7 @@ void Meta::load_sections(void)
     size_t curr_offset = elf.elf_hdr.e_shoff;
 
     // Section-Header Table is 1-based table (not 0)
+    // The first entry in the table is 0'd out
     for (int curr_sec_idx=1; curr_sec_idx < num_secs; curr_sec_idx++) {
 
         curr_offset += SEC_SIZE;
