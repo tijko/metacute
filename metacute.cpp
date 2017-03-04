@@ -185,7 +185,9 @@ void Meta::load_sections(void)
                                                             str_tbl_offset) : 
                                                                       "None";
 
-        curr_sec->info = section->sh_info ? get_section_str(section->sh_info, 
+        curr_sec->info = section->sh_info && (section->sh_type == SHT_REL || 
+                                              section->sh_type == SHT_RELA) 
+                                          ? get_section_str(section->sh_info, 
                                                             str_tbl_offset) :
                                                                       "None";
 
