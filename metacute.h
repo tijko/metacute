@@ -15,6 +15,7 @@
 #define SEC_SIZE sizeof(Elf64_Shdr)
 
 #define NUM_SEC_VALS 34
+#define ALIGN_OUTPUT 15
 
 #define ELF_PRINT_FORMAT "------------------------------------------------------------\n" \
                          "File: %s\tArch: %s\tType: %s\nElf-Size: %d\t"                   \

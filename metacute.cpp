@@ -198,7 +198,7 @@ void Meta::display_section_chars(int idx, size_t sec_offset, int count)
 {
     std::cout << ' ';
 
-    if (count % 16 == 0) {
+    if (!(count & ALIGN_OUTPUT)) {
         for (int j=idx-16; j < idx; j++) {
             if (binary[sec_offset + j] > 32 && binary[sec_offset + j] < 127)
                 std::cout << (char) binary[sec_offset + j];
@@ -206,7 +206,7 @@ void Meta::display_section_chars(int idx, size_t sec_offset, int count)
                 std::cout << '.';
         }
     } else {
-        int trail_offset = count % 16;
+        int trail_offset = count & ALIGN_OUTPUT;
         int width = ALIGN_SECTION_WIDTH - (trail_offset * 2 + 
                                           (trail_offset - 1) / 4);
         std::cout << std::setw(width);        
@@ -229,10 +229,10 @@ void Meta::print_sections(void)
         item.second->print_section_hdr(item.first);
         size_t sec_offset = item.second->sec_hdr.sh_offset;
         int count = 0;
+        int section_size = (int) item.second->sec_hdr.sh_size;
+        for (int i=0; i <= section_size; i++) {
 
-        for (int i=0; i <= (int) item.second->sec_hdr.sh_size; i++) {
-
-            if (count % 16 == 0 || i == (int) item.second->sec_hdr.sh_size) {
+            if (!(count & ALIGN_OUTPUT) || i == section_size) {
                 if (count)
                     display_section_chars(i, sec_offset, count);
                 if (i != (int) item.second->sec_hdr.sh_size) {
@@ -247,7 +247,7 @@ void Meta::print_sections(void)
             } else if (count > 0 && count % 4 == 0)
                 std::cout << ' ';
 
-            if (i < (int) item.second->sec_hdr.sh_size) {
+            if (i < section_size) {
                 if (binary[sec_offset + i] < 16) { 
                     std::cout << '0' << std::setbase(16);
                     std::cout << (int) binary[sec_offset + i];
