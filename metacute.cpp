@@ -235,7 +235,7 @@ void Meta::print_sections(void)
             if (!(count & ALIGN_OUTPUT) || i == section_size) {
                 if (count)
                     display_section_chars(i, sec_offset, count);
-                if (i != (int) item.second->sec_hdr.sh_size) {
+                if (i != section_size) {
                     if (item.second->sec_hdr.sh_addr == 0)
                         std::cout << std::endl << "xxxxxx ";
                     else {
