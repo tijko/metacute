@@ -196,11 +196,11 @@ void Meta::load_sections(void)
     }
 }
 
-void Meta::display_section_chars(int idx, size_t sec_offset, int count)
+void Meta::display_section_chars(int idx, size_t sec_offset)
 {
     std::cout << ' ';
 
-    if (!(count & ALIGN_OUTPUT)) {
+    if (!(idx & ALIGN_OUTPUT)) {
         for (int j=idx-16; j < idx; j++) {
             if (binary[sec_offset + j] > 32 && binary[sec_offset + j] < 127)
                 std::cout << (char) binary[sec_offset + j];
@@ -208,7 +208,7 @@ void Meta::display_section_chars(int idx, size_t sec_offset, int count)
                 std::cout << '.';
         }
     } else {
-        int trail_offset = count & ALIGN_OUTPUT;
+        int trail_offset = idx & ALIGN_OUTPUT;
         int width = ALIGN_SECTION_WIDTH - (trail_offset * 2 + 
                                           (trail_offset - 1) / 4);
         std::cout << std::setw(width);        
@@ -230,36 +230,32 @@ void Meta::print_sections(void)
     for (const auto& item : sections) {
         item.second->print_section_hdr(item.first);
         size_t sec_offset = item.second->sec_hdr.sh_offset;
-        int count = 0;
         int section_size = (int) item.second->sec_hdr.sh_size;
-        for (int i=0; i <= section_size; i++) {
-
-            if (!(count & ALIGN_OUTPUT) || i == section_size) {
-                if (count)
-                    display_section_chars(i, sec_offset, count);
-                if (i != section_size) {
+        for (int idx=0; idx <= section_size; idx++) {
+            if (!(idx & ALIGN_OUTPUT) || idx == section_size) {
+                if (idx)
+                    display_section_chars(idx, sec_offset);
+                if (idx != section_size) {
                     if (item.second->sec_hdr.sh_addr == 0)
                         std::cout << std::endl << "xxxxxx ";
                     else {
                         std::cout << std::endl << std::setbase(16);
-                        std::cout << item.second->sec_hdr.sh_addr + count;
+                        std::cout << item.second->sec_hdr.sh_addr + idx;
                         std::cout << ' ';
                     }
                 }
-            } else if (count > 0 && count % 4 == 0)
+            } else if (idx > 0 && (idx % 4 == 0))
                 std::cout << ' ';
 
-            if (i < section_size) {
-                if (binary[sec_offset + i] < 16) { 
+            if (idx < section_size) {
+                if (binary[sec_offset + idx] < 16) { 
                     std::cout << '0' << std::setbase(16);
-                    std::cout << (int) binary[sec_offset + i];
+                    std::cout << (int) binary[sec_offset + idx];
                 } else {
                     std::cout << std::setbase(16);
-                    std::cout << (int) binary[sec_offset + i];
+                    std::cout << (int) binary[sec_offset + idx];
                 }
             }
-
-            count++;
         }
 
         std::cout << std::endl << std::endl;

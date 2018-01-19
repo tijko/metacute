@@ -25,7 +25,7 @@
 
 #define SEC_PRINT_FORMAT "------------------------------------------------------------\n" \
                          " Name: %s\tSize: %lu\tOffset: %lu\n Type: %s\n"                 \
-                         " Link: %s\n Info: %s\n Flags: %lu\n"                             \
+                         " Link: %s\n Info: %s\n Flags: %lu\n"                            \
                          "------------------------------------------------------------"   \
 
 const unsigned int section_values[] = {
@@ -154,7 +154,7 @@ class Meta {
         Elf elf;
         void load_elf(void);
         void load_sections(void);
-        void display_section_chars(int idx, size_t sec_offset, int count);
+        void display_section_chars(int idx, size_t sec_offset);
         std::string get_section_str(size_t sh_idx, size_t str_tbl_offset);
         std::ifstream file_handle;
 };
