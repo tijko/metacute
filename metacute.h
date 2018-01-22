@@ -132,6 +132,8 @@ class Section {
         Elf64_Shdr sec_hdr;
         std::string link;
         std::string info;
+        // mv this map to Meta?
+        // keep just a <string> in Section
         std::map<const unsigned int, std::string> section_types;
         void print_section_hdr(std::string name);
 

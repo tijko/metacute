@@ -229,6 +229,10 @@ void Meta::print_sections(void)
 
     for (const auto& item : sections) {
         item.second->print_section_hdr(item.first);
+        if (!(item.first.compare(".bss"))) {
+            std::cout << std::endl;
+            continue;
+        }
         size_t sec_offset = item.second->sec_hdr.sh_offset;
         int section_size = (int) item.second->sec_hdr.sh_size;
         for (int idx=0; idx <= section_size; idx++) {
