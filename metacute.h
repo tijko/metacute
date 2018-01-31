@@ -15,6 +15,7 @@
 #define SEC_SIZE sizeof(Elf64_Shdr)
 
 #define NUM_SEC_VALS 34
+#define NUM_SEG_VALS 20
 #define ALIGN_OUTPUT 15
 
 #define ELF_PRINT_FORMAT "------------------------------------------------------------\n" \
@@ -27,6 +28,11 @@
                          " Name: %s\tSize: %lu\tOffset: %lu\n Type: %s\n"                 \
                          " Link: %s\n Info: %s\n Flags: %lu\n"                            \
                          "------------------------------------------------------------"   \
+
+#define SEG_PRINT_FORMAT "------------------------------------------------------------\n" \
+                         " Type: %s\t Offset: %ld\t Vaddr: %ld\t Paddr: %ld\n"            \
+                         " Filesz: %ld\t Memsz: %ld\t Flags: %d\t Align: %ld\n"           \
+                         "------------------------------------------------------------\n" \
 
 const unsigned int section_values[] = {
     SHT_NULL,
@@ -106,6 +112,52 @@ const std::string section_value_names[] = {
     "SHT_HIUSER"
 };
 
+const std::string segment_type_names[] {
+    "PT_NULL",
+    "PT_LOAD",
+    "PT_DYNAMIC",
+    "PT_INTERP",
+    "PT_NOTE",
+    "PT_SHLIB",
+    "PT_PHDR",
+    "PT_TLS",
+    "PT_NUM",
+    "PT_LOOS",
+    "PT_GNU_EH_FRAME",
+    "PT_GNU_STACK",
+    "PT_GNU_RELRO",
+    "PT_LOSUNW",
+    "PT_SUNWBSS",
+    "PT_SUNWSTACK",
+    "PT_HISUNW",
+    "PT_HIOS",
+    "PT_LOPROC",
+    "PT_HIPROC"
+};
+
+const unsigned int segment_type_values[] {
+    PT_NULL,
+    PT_LOAD,
+    PT_DYNAMIC,
+    PT_INTERP,
+    PT_NOTE,
+    PT_SHLIB,
+    PT_PHDR,
+    PT_TLS,
+    PT_NUM,
+    PT_LOOS,
+    PT_GNU_EH_FRAME,
+    PT_GNU_STACK,
+    PT_GNU_RELRO,
+    PT_LOSUNW,
+    PT_SUNWBSS,
+    PT_SUNWSTACK,
+    PT_HISUNW,
+    PT_HIOS,
+    PT_LOPROC,
+    PT_HIPROC,
+};
+
 void print_usage(void);
 
 class Elf {
@@ -131,14 +183,23 @@ class Section {
         Section(Elf64_Shdr *section); 
         Elf64_Shdr sec_hdr;
         std::string link;
-        std::string info;
-        // mv this map to Meta?
-        // keep just a <string> in Section
+        std::string info; // Depends section-type
         std::map<const unsigned int, std::string> section_types;
         void print_section_hdr(std::string name);
 
     private:
         void load_section_types(void);
+};
+
+class Segment {
+
+    public:
+        Segment(Elf64_Phdr *seg_hdr);
+        Elf64_Phdr *seg_hdr;
+        std::map<const unsigned int, std::string> segment_types;
+
+    private:
+        void load_segment_types(void);
 };
 
 class Meta {
@@ -148,7 +209,9 @@ class Meta {
         std::string file;
         std::vector<uint8_t> binary;
         std::map<std::string, Section *> sections;
+        std::vector<Segment *> segments; 
         void print_sections(void);
+        void print_segments(void);
         void print_elf(void);
         Elf64_Ehdr get_elf(void);
 
@@ -156,6 +219,7 @@ class Meta {
         Elf elf;
         void load_elf(void);
         void load_sections(void);
+        void load_segments(void);
         void display_section_chars(int idx, size_t sec_offset);
         std::string get_section_str(size_t sh_idx, size_t str_tbl_offset);
         std::ifstream file_handle;

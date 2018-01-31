@@ -130,6 +130,21 @@ void Section::print_section_hdr(std::string name)
                              link.c_str(), info.c_str(), sec_hdr.sh_flags);
 }
 
+Segment::Segment(Elf64_Phdr *seg_hdr)
+{
+    this->seg_hdr = seg_hdr;
+    load_segment_types();
+}
+
+void Segment::load_segment_types(void)
+{
+    for (int i=0; i < NUM_SEG_VALS; i++) {
+        unsigned int value = segment_type_values[i];
+        std::string name = segment_type_names[i];
+        segment_types[value] = name;
+    }
+}
+
 Meta::Meta(const char *file, size_t file_size)
 {
     this->file = file;
@@ -160,6 +175,27 @@ std::string Meta::get_section_str(size_t sh_idx, size_t str_tbl_offset)
     int sh_offset = elf.elf_hdr.e_shoff + (sh_idx * SEC_SIZE);
     int str_offset = ((Elf64_Shdr *) &binary[sh_offset])->sh_name;
     return std::string((char *) &binary[str_offset + str_tbl_offset]);
+}
+
+void Meta::print_segments(void)
+{
+    int phnum = elf.elf_hdr.e_phnum;
+    size_t phsize = elf.elf_hdr.e_phentsize;
+    size_t offset = elf.elf_hdr.e_phoff;
+
+    segments.resize(phnum * phsize);
+
+    for (int i=0; i < phnum; i++) {
+        size_t current_offset = phsize * i;
+        Elf64_Phdr *segment = (Elf64_Phdr *) &binary[current_offset + offset];
+        segments[i] = new Segment(segment);
+        int seg_type = segment->p_type;
+        std::string name = segments[i]->segment_types[seg_type];
+        printf(SEG_PRINT_FORMAT, name.c_str(), segment->p_offset, 
+                                 segment->p_vaddr, segment->p_paddr, 
+                                 segment->p_filesz, segment->p_memsz, 
+                                 segment->p_flags, segment->p_align);
+    } 
 }
 
 void Meta::load_sections(void)
@@ -229,12 +265,15 @@ void Meta::print_sections(void)
 
     for (const auto& item : sections) {
         item.second->print_section_hdr(item.first);
+
         if (!(item.first.compare(".bss"))) {
             std::cout << std::endl;
             continue;
         }
+
         size_t sec_offset = item.second->sec_hdr.sh_offset;
         int section_size = (int) item.second->sec_hdr.sh_size;
+
         for (int idx=0; idx <= section_size; idx++) {
             if (!(idx & ALIGN_OUTPUT) || idx == section_size) {
                 if (idx)
@@ -248,7 +287,7 @@ void Meta::print_sections(void)
                         std::cout << ' ';
                     }
                 }
-            } else if (idx > 0 && (idx % 4 == 0))
+            } else if (idx && !(idx % 4))
                 std::cout << ' ';
 
             if (idx < section_size) {
@@ -297,6 +336,7 @@ int main(int argc, char *argv[])
             metacute.print_sections();
             break;
         case ('p'):
+            metacute.print_segments();
             break;
         default:
             ERROR("Invalid options!");
