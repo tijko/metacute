@@ -112,8 +112,18 @@ Section::Section(Elf64_Shdr *section)
     load_section_types();
 }
 
+void Section::load_section_flags(void)
+{
+    for (int flag=0; flag < SH_FLAG_NUM; flag++) {
+        if (sh_flags[flag] & sec_hdr.sh_flags)
+            flags.push_back(sh_flag_names[flag]);
+    } 
+}
+
 void Section::load_section_types(void)
 {
+    // Once upon construction (i.e. pass a copy or have just one created)
+    //
     for (int i=0; i < NUM_SEC_VALS; i++) {
         unsigned int value = section_values[i];
         std::string name = section_value_names[i];
@@ -124,10 +134,13 @@ void Section::load_section_types(void)
 void Section::print_section_hdr(std::string name)
 {
     Elf64_Word type = sec_hdr.sh_type;
-
-    printf(SEC_PRINT_FORMAT, name.c_str(), sec_hdr.sh_size, sec_hdr.sh_offset,
-                             section_types[type].c_str(),
-                             link.c_str(), info.c_str(), sec_hdr.sh_flags);
+    load_section_flags();
+    printf(SEC_PRINT_FORMAT, name.c_str(), sec_hdr.sh_size, 
+                             sec_hdr.sh_offset, section_types[type].c_str(),
+                             link.c_str(), info.c_str());
+    for (std::string flag : flags)
+        std::cout << flag << " ";
+    printf(PRINT_TERM);
 }
 
 Segment::Segment(Elf64_Phdr *seg_hdr)
@@ -138,6 +151,8 @@ Segment::Segment(Elf64_Phdr *seg_hdr)
 
 void Segment::load_segment_types(void)
 {
+    // Once upon construction (i.e. pass a copy or have just one created)
+    //
     for (int i=0; i < NUM_SEG_VALS; i++) {
         unsigned int value = segment_type_values[i];
         std::string name = segment_type_names[i];
@@ -262,7 +277,6 @@ void Meta::print_sections(void)
 {
     std::cout << std::endl << "File: " << file << std::endl << std::endl;
     load_sections();
-
     for (const auto& item : sections) {
         item.second->print_section_hdr(item.first);
 

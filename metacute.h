@@ -12,6 +12,7 @@
 
 #define ALIGN_SECTION_WIDTH 36
 
+// create on construction, if to be made compatible with 32-bit elfs
 #define SEC_SIZE sizeof(Elf64_Shdr)
 
 #define NUM_SEC_VALS 34
@@ -26,11 +27,12 @@
 
 #define SEC_PRINT_FORMAT "------------------------------------------------------------\n" \
                          " Name: %s\tSize: %lu\tOffset: %lu\n Type: %s\n"                 \
-                         " Link: %s\n Info: %s\n Flags: %lu\n"                            \
-                         "------------------------------------------------------------"   \
+                         " Link: %s\n Info: %s\n Flags: "                                 \
+
+#define PRINT_TERM       "\n------------------------------------------------------------" \
 
 #define SEG_PRINT_FORMAT "------------------------------------------------------------\n" \
-                         " Type: %s\t Offset: %ld\t Vaddr: %ld\t Paddr: %ld\n"            \
+                         " Type: %s\t Offset: %ld\t Vaddr: %#lx\t Paddr: %#lx\n"          \
                          " Filesz: %ld\t Memsz: %ld\t Flags: %d\t Align: %ld\n"           \
                          "------------------------------------------------------------\n" \
 
@@ -112,6 +114,43 @@ const std::string section_value_names[] = {
     "SHT_HIUSER"
 };
 
+#define SH_FLAG_NUM 15
+
+const unsigned int sh_flags[] {
+    SHF_WRITE,
+    SHF_ALLOC,
+    SHF_EXECINSTR,
+    SHF_MERGE,
+    SHF_STRINGS,
+    SHF_INFO_LINK,
+    SHF_LINK_ORDER,
+    SHF_OS_NONCONFORMING,
+    SHF_GROUP,
+    SHF_COMPRESSED,
+    SHF_MASKOS,
+    SHF_MASKPROC,
+    SHF_ORDERED,
+    SHF_EXCLUDE
+};
+
+const std::string sh_flag_names[] {
+    "WRITE",
+    "ALLOC",
+    "EXECINSTR",
+    "MERGE",
+    "STRINGS",
+    "INFO_LINK",
+    "LINK_ORDER"
+    "OS_NONCONFORMING",
+    "GROUP",
+    "TLS",
+    "COMPRESSED",
+    "MASKOS",
+    "MASKPROC",
+    "ORDERED",
+    "EXCLUDE"
+};
+
 const std::string segment_type_names[] {
     "PT_NULL",
     "PT_LOAD",
@@ -182,6 +221,7 @@ class Section {
     public:
         Section(Elf64_Shdr *section); 
         Elf64_Shdr sec_hdr;
+        std::vector<std::string> flags;
         std::string link;
         std::string info; // Depends section-type
         std::map<const unsigned int, std::string> section_types;
@@ -189,6 +229,7 @@ class Section {
 
     private:
         void load_section_types(void);
+        void load_section_flags(void);
 };
 
 class Segment {
