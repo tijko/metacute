@@ -118,6 +118,9 @@ void Section::load_section_flags(void)
         if (sh_flags[flag] & sec_hdr.sh_flags)
             flags.push_back(sh_flag_names[flag]);
     } 
+
+    if (flags.empty())
+        flags.push_back("None");
 }
 
 void Section::load_section_types(void)
@@ -139,7 +142,7 @@ void Section::print_section_hdr(std::string name)
                              sec_hdr.sh_offset, section_types[type].c_str(),
                              link.c_str(), info.c_str());
     for (std::string flag : flags)
-        std::cout << flag << " ";
+        std::cout << "[" << flag << "] ";
     printf(PRINT_TERM);
 }
 
@@ -147,17 +150,27 @@ Segment::Segment(Elf64_Phdr *seg_hdr)
 {
     this->seg_hdr = seg_hdr;
     load_segment_types();
+    load_segment_flags();
 }
 
 void Segment::load_segment_types(void)
 {
-    // Once upon construction (i.e. pass a copy or have just one created)
-    //
     for (int i=0; i < NUM_SEG_VALS; i++) {
         unsigned int value = segment_type_values[i];
         std::string name = segment_type_names[i];
         segment_types[value] = name;
     }
+}
+
+void Segment::load_segment_flags(void)
+{
+    for (int flag=0; flag < PH_FLAG_NUM; flag++) {
+        if (ph_flags[flag] & seg_hdr->p_flags)
+            flags.push_back(segment_flag_names[flag]);
+    } 
+
+    if (flags.empty())
+        flags.push_back("None");
 }
 
 Meta::Meta(const char *file, size_t file_size)
@@ -207,9 +220,13 @@ void Meta::print_segments(void)
         int seg_type = segment->p_type;
         std::string name = segments[i]->segment_types[seg_type];
         printf(SEG_PRINT_FORMAT, name.c_str(), segment->p_offset, 
-                                 segment->p_vaddr, segment->p_paddr, 
-                                 segment->p_filesz, segment->p_memsz, 
-                                 segment->p_flags, segment->p_align);
+                                 segment->p_filesz, segment->p_paddr, 
+                                 segment->p_vaddr, segment->p_memsz, 
+                                 segment->p_align);
+        for (std::string flag : segments[i]->flags)
+            std::cout << "[" << flag << "] ";
+        printf(PRINT_TERM);
+        std::cout << std::endl;
     } 
 }
 

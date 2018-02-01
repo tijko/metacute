@@ -11,13 +11,17 @@
     } while (1)                         \
 
 #define ALIGN_SECTION_WIDTH 36
+#define ALIGN_OUTPUT 15
 
 // create on construction, if to be made compatible with 32-bit elfs
 #define SEC_SIZE sizeof(Elf64_Shdr)
 
 #define NUM_SEC_VALS 34
 #define NUM_SEG_VALS 20
-#define ALIGN_OUTPUT 15
+
+#define SH_FLAG_NUM 15
+#define PH_FLAG_NUM 3
+
 
 #define ELF_PRINT_FORMAT "------------------------------------------------------------\n" \
                          "File: %s\tArch: %s\tType: %s\nElf-Size: %d\t"                   \
@@ -26,54 +30,14 @@
                          "------------------------------------------------------------\n" \
 
 #define SEC_PRINT_FORMAT "------------------------------------------------------------\n" \
-                         " Name: %s\tSize: %lu\tOffset: %lu\n Type: %s\n"                 \
-                         " Link: %s\n Info: %s\n Flags: "                                 \
+                         " Name: %s\tSize: %lu\tOffset: %lu\n Type:  %s\n"                \
+                         " Link:  %s\n Info:  %s\n Flags: "                               \
 
 #define PRINT_TERM       "\n------------------------------------------------------------" \
 
 #define SEG_PRINT_FORMAT "------------------------------------------------------------\n" \
-                         " Type: %s\t Offset: %ld\t Vaddr: %#lx\t Paddr: %#lx\n"          \
-                         " Filesz: %ld\t Memsz: %ld\t Flags: %d\t Align: %ld\n"           \
-                         "------------------------------------------------------------\n" \
-
-const unsigned int section_values[] = {
-    SHT_NULL,
-    SHT_PROGBITS,
-    SHT_SYMTAB,
-    SHT_STRTAB,
-    SHT_RELA,
-    SHT_HASH,
-    SHT_DYNAMIC,
-    SHT_NOTE,
-    SHT_NOBITS,
-    SHT_REL,
-    SHT_SHLIB,
-    SHT_DYNSYM,
-    SHT_INIT_ARRAY,
-    SHT_FINI_ARRAY,
-    SHT_PREINIT_ARRAY,
-    SHT_GROUP,
-    SHT_SYMTAB_SHNDX,
-    SHT_NUM,
-    SHT_LOOS,
-    SHT_GNU_ATTRIBUTES,
-    SHT_GNU_HASH,
-    SHT_GNU_LIBLIST,
-    SHT_CHECKSUM,
-    SHT_LOSUNW,
-    SHT_SUNW_move,
-    SHT_SUNW_COMDAT,
-    SHT_SUNW_syminfo,
-    SHT_GNU_verdef,
-    SHT_GNU_verneed,
-    SHT_GNU_versym,
-    SHT_HISUNW,
-    SHT_HIOS,
-    SHT_LOPROC,
-    SHT_HIPROC,
-    SHT_LOUSER,
-    SHT_HIUSER
-};
+                         " Type: %s\t Offset: %ld\t Filesz: %ld\n"                        \
+                         " Paddr: %#lx\n Vaddr: %#lx\n Memsz: %ld\t Align: %ld\n Flags: " \
 
 const std::string section_value_names[] = {
     "SHT_NULL",
@@ -114,23 +78,43 @@ const std::string section_value_names[] = {
     "SHT_HIUSER"
 };
 
-#define SH_FLAG_NUM 15
-
-const unsigned int sh_flags[] {
-    SHF_WRITE,
-    SHF_ALLOC,
-    SHF_EXECINSTR,
-    SHF_MERGE,
-    SHF_STRINGS,
-    SHF_INFO_LINK,
-    SHF_LINK_ORDER,
-    SHF_OS_NONCONFORMING,
-    SHF_GROUP,
-    SHF_COMPRESSED,
-    SHF_MASKOS,
-    SHF_MASKPROC,
-    SHF_ORDERED,
-    SHF_EXCLUDE
+const unsigned int section_values[] = {
+    SHT_NULL,
+    SHT_PROGBITS,
+    SHT_SYMTAB,
+    SHT_STRTAB,
+    SHT_RELA,
+    SHT_HASH,
+    SHT_DYNAMIC,
+    SHT_NOTE,
+    SHT_NOBITS,
+    SHT_REL,
+    SHT_SHLIB,
+    SHT_DYNSYM,
+    SHT_INIT_ARRAY,
+    SHT_FINI_ARRAY,
+    SHT_PREINIT_ARRAY,
+    SHT_GROUP,
+    SHT_SYMTAB_SHNDX,
+    SHT_NUM,
+    SHT_LOOS,
+    SHT_GNU_ATTRIBUTES,
+    SHT_GNU_HASH,
+    SHT_GNU_LIBLIST,
+    SHT_CHECKSUM,
+    SHT_LOSUNW,
+    SHT_SUNW_move,
+    SHT_SUNW_COMDAT,
+    SHT_SUNW_syminfo,
+    SHT_GNU_verdef,
+    SHT_GNU_verneed,
+    SHT_GNU_versym,
+    SHT_HISUNW,
+    SHT_HIOS,
+    SHT_LOPROC,
+    SHT_HIPROC,
+    SHT_LOUSER,
+    SHT_HIUSER
 };
 
 const std::string sh_flag_names[] {
@@ -149,6 +133,23 @@ const std::string sh_flag_names[] {
     "MASKPROC",
     "ORDERED",
     "EXCLUDE"
+};
+
+const unsigned int sh_flags[] {
+    SHF_WRITE,
+    SHF_ALLOC,
+    SHF_EXECINSTR,
+    SHF_MERGE,
+    SHF_STRINGS,
+    SHF_INFO_LINK,
+    SHF_LINK_ORDER,
+    SHF_OS_NONCONFORMING,
+    SHF_GROUP,
+    SHF_COMPRESSED,
+    SHF_MASKOS,
+    SHF_MASKPROC,
+    SHF_ORDERED,
+    SHF_EXCLUDE
 };
 
 const std::string segment_type_names[] {
@@ -197,6 +198,18 @@ const unsigned int segment_type_values[] {
     PT_HIPROC,
 };
 
+const std::string segment_flag_names[] {
+    "EXEC",
+    "WRITE",
+    "READ"
+};
+
+const int ph_flags[] {
+    PF_X,
+    PF_W,
+    PF_R
+};
+
 void print_usage(void);
 
 class Elf {
@@ -224,12 +237,12 @@ class Section {
         std::vector<std::string> flags;
         std::string link;
         std::string info; // Depends section-type
-        std::map<const unsigned int, std::string> section_types;
+        std::map<const unsigned int, std::string> section_types; // XXX mv
         void print_section_hdr(std::string name);
 
     private:
-        void load_section_types(void);
-        void load_section_flags(void);
+        void load_section_types(void); // XXX opaque (i.e. (typename T), Nsize, Container)
+        void load_section_flags(void); // XXX opaque
 };
 
 class Segment {
@@ -237,10 +250,12 @@ class Segment {
     public:
         Segment(Elf64_Phdr *seg_hdr);
         Elf64_Phdr *seg_hdr;
-        std::map<const unsigned int, std::string> segment_types;
+        std::vector<std::string> flags;
+        std::map<const unsigned int, std::string> segment_types; // XXX mv
 
     private:
-        void load_segment_types(void);
+        void load_segment_types(void); // XXX opaque
+        void load_segment_flags(void); // XXX opaque
 };
 
 class Meta {
