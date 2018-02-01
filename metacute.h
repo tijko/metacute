@@ -14,13 +14,14 @@
 #define ALIGN_OUTPUT 15
 
 // create on construction, if to be made compatible with 32-bit elfs
-#define SEC_SIZE sizeof(Elf64_Shdr)
+#define SH_SIZE sizeof(Elf64_Shdr)
+#define PH_SIZE sizeof(Elf64_Phdr)
 
-#define NUM_SEC_VALS 34
-#define NUM_SEG_VALS 20
+#define SH_TYPES 33
+#define PH_TYPES 20
 
-#define SH_FLAG_NUM 15
-#define PH_FLAG_NUM 3
+#define SH_FLAGS 14
+#define PH_FLAGS 3
 
 
 #define ELF_PRINT_FORMAT "------------------------------------------------------------\n" \
@@ -29,17 +30,17 @@
                          "Sections: %8u\nSegment-Offset: %lu\tSection-Offset: %lu\n"      \
                          "------------------------------------------------------------\n" \
 
-#define SEC_PRINT_FORMAT "------------------------------------------------------------\n" \
+#define SH_PRINT_FORMAT "------------------------------------------------------------\n"  \
                          " Name: %s\tSize: %lu\tOffset: %lu\n Type:  %s\n"                \
                          " Link:  %s\n Info:  %s\n Flags: "                               \
 
 #define PRINT_TERM       "\n------------------------------------------------------------" \
 
-#define SEG_PRINT_FORMAT "------------------------------------------------------------\n" \
+#define PH_PRINT_FORMAT "------------------------------------------------------------\n"  \
                          " Type: %s\t Offset: %ld\t Filesz: %ld\n"                        \
                          " Paddr: %#lx\n Vaddr: %#lx\n Memsz: %ld\t Align: %ld\n Flags: " \
 
-const std::string section_value_names[] = {
+char *sh_names[] = {
     "SHT_NULL",
     "SHT_PROGBITS",
     "SHT_SYMTAB",
@@ -75,10 +76,9 @@ const std::string section_value_names[] = {
     "SHT_LOPROC",       // when building the hash table
     "SHT_HIPROC",
     "SHT_LOUSER",
-    "SHT_HIUSER"
 };
 
-const unsigned int section_values[] = {
+unsigned int sh_types[] = {
     SHT_NULL,
     SHT_PROGBITS,
     SHT_SYMTAB,
@@ -114,10 +114,9 @@ const unsigned int section_values[] = {
     SHT_LOPROC,
     SHT_HIPROC,
     SHT_LOUSER,
-    SHT_HIUSER
 };
 
-const std::string sh_flag_names[] {
+char *sh_flag_names[] {
     "WRITE",
     "ALLOC",
     "EXECINSTR",
@@ -135,7 +134,7 @@ const std::string sh_flag_names[] {
     "EXCLUDE"
 };
 
-const unsigned int sh_flags[] {
+unsigned int sh_flags[] {
     SHF_WRITE,
     SHF_ALLOC,
     SHF_EXECINSTR,
@@ -149,10 +148,9 @@ const unsigned int sh_flags[] {
     SHF_MASKOS,
     SHF_MASKPROC,
     SHF_ORDERED,
-    SHF_EXCLUDE
 };
 
-const std::string segment_type_names[] {
+char *ph_names[] {
     "PT_NULL",
     "PT_LOAD",
     "PT_DYNAMIC",
@@ -175,7 +173,7 @@ const std::string segment_type_names[] {
     "PT_HIPROC"
 };
 
-const unsigned int segment_type_values[] {
+int ph_types[] {
     PT_NULL,
     PT_LOAD,
     PT_DYNAMIC,
@@ -198,19 +196,20 @@ const unsigned int segment_type_values[] {
     PT_HIPROC,
 };
 
-const std::string segment_flag_names[] {
+char *ph_flag_names[] {
     "EXEC",
     "WRITE",
     "READ"
 };
 
-const int ph_flags[] {
+int ph_flags[] {
     PF_X,
     PF_W,
     PF_R
 };
 
 void print_usage(void);
+
 
 class Elf {
 
@@ -229,53 +228,40 @@ class Elf {
         int check_magic_number(std::vector<uint8_t> binary);
 };
 
-class Section {
-
-    public:
-        Section(Elf64_Shdr *section); 
-        Elf64_Shdr sec_hdr;
-        std::vector<std::string> flags;
-        std::string link;
-        std::string info; // Depends section-type
-        std::map<const unsigned int, std::string> section_types; // XXX mv
-        void print_section_hdr(std::string name);
-
-    private:
-        void load_section_types(void); // XXX opaque (i.e. (typename T), Nsize, Container)
-        void load_section_flags(void); // XXX opaque
-};
-
-class Segment {
-
-    public:
-        Segment(Elf64_Phdr *seg_hdr);
-        Elf64_Phdr *seg_hdr;
-        std::vector<std::string> flags;
-        std::map<const unsigned int, std::string> segment_types; // XXX mv
-
-    private:
-        void load_segment_types(void); // XXX opaque
-        void load_segment_flags(void); // XXX opaque
-};
-
 class Meta {
 
     public:
         Meta(const char *file, size_t file_size);
         std::string file;
         std::vector<uint8_t> binary;
-        std::map<std::string, Section *> sections;
-        std::vector<Segment *> segments; 
+
+        std::map<std::string, Elf64_Shdr *> sections;
+        std::vector<Elf64_Phdr *> segments; 
+
         void print_sections(void);
         void print_segments(void);
         void print_elf(void);
+
         Elf64_Ehdr get_elf(void);
 
     private:
         Elf elf;
         void load_elf(void);
-        void load_sections(void);
-        void load_segments(void);
+        void load_sections(void); 
+        void load_segments(void); 
+
+        void print_section_hdr(Elf64_Shdr *section, std::string section_name);
+
+        std::map<int, std::string> segment_types; 
+        std::map<int, std::string> section_types;
+
+        std::map<int, std::string> 
+        map_hdr_types(char **type_names, unsigned int *type_values, int type_num);
+
+        std::vector<std::string>
+        get_hdr_flags(char **flag_names, unsigned int *flag_values, 
+                      int hdr_flags, int flag_num);
+
         void display_section_chars(int idx, size_t sec_offset);
         std::string get_section_str(size_t sh_idx, size_t str_tbl_offset);
         std::ifstream file_handle;
