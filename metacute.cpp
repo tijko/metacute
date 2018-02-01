@@ -106,71 +106,35 @@ int Elf::check_magic_number(std::vector<uint8_t> binary)
     return memcmp(ELFMAG, binary.data(), SELFMAG);
 }
 
-Section::Section(Elf64_Shdr *section)
+std::map<int, std::string>
+Meta::map_hdr_types(char **type_names, unsigned int *type_values, int type_num)
 {
-    memcpy(&sec_hdr, section, SEC_SIZE);
-    load_section_types();
+    std::map<int, std::string> hdr_type_map;
+
+    for (int i=0; i < type_num; i++) {
+        int value = type_values[i];
+        std::string name = type_names[i];
+        hdr_type_map[value] = name;
+    }
+
+    return hdr_type_map;
 }
 
-void Section::load_section_flags(void)
+std::vector<std::string>
+Meta::get_hdr_flags(char **flag_names, unsigned int *flag_values,
+                    int hdr_flags, int flag_num)
 {
-    for (int flag=0; flag < SH_FLAG_NUM; flag++) {
-        if (sh_flags[flag] & sec_hdr.sh_flags)
-            flags.push_back(sh_flag_names[flag]);
+    std::vector<std::string> flags;
+
+    for (int flag=0; flag < flag_num; flag++) {
+        if (flag_values[flag] & hdr_flags)
+            flags.push_back(flag_names[flag]);
     } 
 
     if (flags.empty())
         flags.push_back("None");
-}
 
-void Section::load_section_types(void)
-{
-    // Once upon construction (i.e. pass a copy or have just one created)
-    //
-    for (int i=0; i < NUM_SEC_VALS; i++) {
-        unsigned int value = section_values[i];
-        std::string name = section_value_names[i];
-        section_types[value] = name;
-    }
-}
-
-void Section::print_section_hdr(std::string name)
-{
-    Elf64_Word type = sec_hdr.sh_type;
-    load_section_flags();
-    printf(SEC_PRINT_FORMAT, name.c_str(), sec_hdr.sh_size, 
-                             sec_hdr.sh_offset, section_types[type].c_str(),
-                             link.c_str(), info.c_str());
-    for (std::string flag : flags)
-        std::cout << "[" << flag << "] ";
-    printf(PRINT_TERM);
-}
-
-Segment::Segment(Elf64_Phdr *seg_hdr)
-{
-    this->seg_hdr = seg_hdr;
-    load_segment_types();
-    load_segment_flags();
-}
-
-void Segment::load_segment_types(void)
-{
-    for (int i=0; i < NUM_SEG_VALS; i++) {
-        unsigned int value = segment_type_values[i];
-        std::string name = segment_type_names[i];
-        segment_types[value] = name;
-    }
-}
-
-void Segment::load_segment_flags(void)
-{
-    for (int flag=0; flag < PH_FLAG_NUM; flag++) {
-        if (ph_flags[flag] & seg_hdr->p_flags)
-            flags.push_back(segment_flag_names[flag]);
-    } 
-
-    if (flags.empty())
-        flags.push_back("None");
+    return flags;
 }
 
 Meta::Meta(const char *file, size_t file_size)
@@ -198,33 +162,63 @@ void Meta::print_elf(void)
                              elf.elf_hdr.e_shoff);
 }
 
+void Meta::print_section_hdr(Elf64_Shdr *section, std::string section_name)
+{
+    Elf64_Word type = section->sh_type;
+
+    printf(SH_PRINT_FORMAT, section_name.c_str(), section->sh_size, 
+                             section->sh_offset, section_types[type].c_str(), "STUB", "STUB");
+                             //link.c_str(), info.c_str());
+
+    std::vector<std::string> flags = get_hdr_flags(sh_flag_names, sh_flags,
+                                                   section->sh_flags, SH_FLAGS);
+    for (std::string flag : flags)
+        std::cout << "[" << flag << "] ";
+
+    printf(PRINT_TERM);
+}
+
 std::string Meta::get_section_str(size_t sh_idx, size_t str_tbl_offset)
 {
-    int sh_offset = elf.elf_hdr.e_shoff + (sh_idx * SEC_SIZE);
+    int sh_offset = elf.elf_hdr.e_shoff + (sh_idx * SH_SIZE);
     int str_offset = ((Elf64_Shdr *) &binary[sh_offset])->sh_name;
     return std::string((char *) &binary[str_offset + str_tbl_offset]);
 }
 
-void Meta::print_segments(void)
+void Meta::load_segments(void)
 {
+    segment_types = map_hdr_types(ph_names, (unsigned int *) &(ph_types[0]), PH_TYPES);
+
     int phnum = elf.elf_hdr.e_phnum;
     size_t phsize = elf.elf_hdr.e_phentsize;
     size_t offset = elf.elf_hdr.e_phoff;
 
-    segments.resize(phnum * phsize);
-
     for (int i=0; i < phnum; i++) {
         size_t current_offset = phsize * i;
-        Elf64_Phdr *segment = (Elf64_Phdr *) &binary[current_offset + offset];
-        segments[i] = new Segment(segment);
-        int seg_type = segment->p_type;
-        std::string name = segments[i]->segment_types[seg_type];
-        printf(SEG_PRINT_FORMAT, name.c_str(), segment->p_offset, 
+        segments.push_back((Elf64_Phdr *) &binary[current_offset + offset]);
+    }
+}
+
+void Meta::print_segments(void)
+{
+    load_segments();
+
+    for (int i=0; i < segments.size(); i++) {
+        Elf64_Phdr *segment = segments[i];
+        std::string name = segment_types[segment->p_type];
+        printf(PH_PRINT_FORMAT, name.c_str(), segment->p_offset, 
                                  segment->p_filesz, segment->p_paddr, 
                                  segment->p_vaddr, segment->p_memsz, 
                                  segment->p_align);
-        for (std::string flag : segments[i]->flags)
+
+        std::vector<std::string> flags = get_hdr_flags(ph_flag_names, 
+                                                     (unsigned int *) &(ph_flags[0]),
+                                                       segment->p_flags, 
+                                                       PH_FLAGS);
+
+        for (std::string flag : flags)
             std::cout << "[" << flag << "] ";
+
         printf(PRINT_TERM);
         std::cout << std::endl;
     } 
@@ -233,22 +227,19 @@ void Meta::print_segments(void)
 void Meta::load_sections(void)
 {
     int num_secs = elf.elf_hdr.e_shnum;
-
     size_t str_sec_offset = elf.elf_hdr.e_shoff + 
-                           (elf.elf_hdr.e_shstrndx * SEC_SIZE);
+                           (elf.elf_hdr.e_shstrndx * SH_SIZE);
     size_t str_tbl_offset = ((Elf64_Shdr *) &binary[str_sec_offset])->sh_offset;
-
     size_t curr_offset = elf.elf_hdr.e_shoff;
 
+    section_types = map_hdr_types(sh_names, sh_types, SH_TYPES); 
     // Section-Header Table is 1-based table (not 0)
     // The first entry in the table is 0'd out
     for (int curr_sec_idx=1; curr_sec_idx < num_secs; curr_sec_idx++) {
 
-        curr_offset += SEC_SIZE;
+        curr_offset += SH_SIZE;
         Elf64_Shdr *section = (Elf64_Shdr *) &binary[curr_offset];
-
-        Section *curr_sec = new Section(section);
-
+/*
         curr_sec->link = section->sh_link ? get_section_str(section->sh_link, 
                                                             str_tbl_offset) : 
                                                                       "None";
@@ -258,9 +249,9 @@ void Meta::load_sections(void)
                                           ? get_section_str(section->sh_info, 
                                                             str_tbl_offset) :
                                                                       "None";
-
+*/
         std::string name((char *) &binary[str_tbl_offset + section->sh_name]);
-        sections[name] = curr_sec;
+        sections[name] = section;
     }
 }
 
@@ -294,27 +285,28 @@ void Meta::print_sections(void)
 {
     std::cout << std::endl << "File: " << file << std::endl << std::endl;
     load_sections();
-    for (const auto& item : sections) {
-        item.second->print_section_hdr(item.first);
+
+    for (std::pair<std::string, Elf64_Shdr *> item : sections) {
+        print_section_hdr(item.second, item.first);
 
         if (!(item.first.compare(".bss"))) {
             std::cout << std::endl;
             continue;
         }
 
-        size_t sec_offset = item.second->sec_hdr.sh_offset;
-        int section_size = (int) item.second->sec_hdr.sh_size;
+        size_t sec_offset = item.second->sh_offset;
+        int section_size = (int) item.second->sh_size;
 
         for (int idx=0; idx <= section_size; idx++) {
             if (!(idx & ALIGN_OUTPUT) || idx == section_size) {
                 if (idx)
                     display_section_chars(idx, sec_offset);
                 if (idx != section_size) {
-                    if (item.second->sec_hdr.sh_addr == 0)
+                    if (item.second->sh_addr == 0)
                         std::cout << std::endl << "xxxxxx ";
                     else {
                         std::cout << std::endl << std::setbase(16);
-                        std::cout << item.second->sec_hdr.sh_addr + idx;
+                        std::cout << item.second->sh_addr + idx;
                         std::cout << ' ';
                     }
                 }
