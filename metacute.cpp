@@ -107,7 +107,8 @@ int Elf::check_magic_number(std::vector<uint8_t> binary)
 }
 
 std::map<int, std::string>
-Meta::map_hdr_types(char **type_names, unsigned int *type_values, int type_num)
+Meta::map_hdr_types(const char **type_names, unsigned int *type_values, 
+                                                          int type_num)
 {
     std::map<int, std::string> hdr_type_map;
 
@@ -121,7 +122,7 @@ Meta::map_hdr_types(char **type_names, unsigned int *type_values, int type_num)
 }
 
 std::vector<std::string>
-Meta::get_hdr_flags(char **flag_names, unsigned int *flag_values,
+Meta::get_hdr_flags(const char **flag_names, unsigned int *flag_values,
                     int hdr_flags, int flag_num)
 {
     std::vector<std::string> flags;
@@ -202,8 +203,9 @@ void Meta::load_segments(void)
 void Meta::print_segments(void)
 {
     load_segments();
+    int total_segments = segments.size();
 
-    for (int i=0; i < segments.size(); i++) {
+    for (int i=0; i < total_segments; i++) {
         Elf64_Phdr *segment = segments[i];
         std::string name = segment_types[segment->p_type];
         printf(PH_PRINT_FORMAT, name.c_str(), segment->p_offset, 
