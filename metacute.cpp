@@ -166,10 +166,12 @@ void Meta::print_elf(void)
 void Meta::print_section_hdr(Elf64_Shdr *section, std::string section_name)
 {
     Elf64_Word type = section->sh_type;
+    std::string link = section_links[section_name];
+    std::string info = section_infos[section_name];
 
     printf(SH_PRINT_FORMAT, section_name.c_str(), section->sh_size, 
-                             section->sh_offset, section_types[type].c_str(), "STUB", "STUB");
-                             //link.c_str(), info.c_str());
+                             section->sh_offset, section_types[type].c_str(), 
+                             link.c_str(), info.c_str());
 
     std::vector<std::string> flags = get_hdr_flags(sh_flag_names, sh_flags,
                                                    section->sh_flags, SH_FLAGS);
@@ -241,18 +243,17 @@ void Meta::load_sections(void)
 
         curr_offset += SH_SIZE;
         Elf64_Shdr *section = (Elf64_Shdr *) &binary[curr_offset];
-/*
-        curr_sec->link = section->sh_link ? get_section_str(section->sh_link, 
-                                                            str_tbl_offset) : 
-                                                                      "None";
-
-        curr_sec->info = section->sh_info && (section->sh_type == SHT_REL || 
-                                              section->sh_type == SHT_RELA) 
-                                          ? get_section_str(section->sh_info, 
-                                                            str_tbl_offset) :
-                                                                      "None";
-*/
         std::string name((char *) &binary[str_tbl_offset + section->sh_name]);
+
+        section_links[name] = section->sh_link ? 
+                             get_section_str(section->sh_link,
+                                             str_tbl_offset) : "None";
+
+        section_infos[name] = section->sh_info && 
+                             (section->sh_type == SHT_REL ||
+                              section->sh_type == SHT_RELA) ? 
+                              get_section_str(section->sh_info, 
+                                              str_tbl_offset) : "None";
         sections[name] = section;
     }
 }
