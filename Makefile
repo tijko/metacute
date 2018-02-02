@@ -1,4 +1,4 @@
-CXXFLAGS = -g -Wall -Wextra -pedantic
+CXXFLAGS = -g -Wall -Wextra -pedantic -std=c++11
 
 .PHONY: clean install uninstall
 
