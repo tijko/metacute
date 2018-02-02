@@ -40,7 +40,7 @@
                          " Type: %s\t Offset: %ld\t Filesz: %ld\n"                        \
                          " Paddr: %#lx\n Vaddr: %#lx\n Memsz: %ld\t Align: %ld\n Flags: " \
 
-char *sh_names[] = {
+const char *sh_names[] = {
     "SHT_NULL",
     "SHT_PROGBITS",
     "SHT_SYMTAB",
@@ -116,7 +116,7 @@ unsigned int sh_types[] = {
     SHT_LOUSER,
 };
 
-char *sh_flag_names[] {
+const char *sh_flag_names[] {
     "WRITE",
     "ALLOC",
     "EXECINSTR",
@@ -150,7 +150,7 @@ unsigned int sh_flags[] {
     SHF_ORDERED,
 };
 
-char *ph_names[] {
+const char *ph_names[] {
     "PT_NULL",
     "PT_LOAD",
     "PT_DYNAMIC",
@@ -196,7 +196,7 @@ int ph_types[] {
     PT_HIPROC,
 };
 
-char *ph_flag_names[] {
+const char *ph_flag_names[] {
     "EXEC",
     "WRITE",
     "READ"
@@ -256,10 +256,11 @@ class Meta {
         std::map<int, std::string> section_types;
 
         std::map<int, std::string> 
-        map_hdr_types(char **type_names, unsigned int *type_values, int type_num);
+        map_hdr_types(const char **type_names, unsigned int *type_values, 
+                                         int type_num);
 
         std::vector<std::string>
-        get_hdr_flags(char **flag_names, unsigned int *flag_values, 
+        get_hdr_flags(const char **flag_names, unsigned int *flag_values,
                       int hdr_flags, int flag_num);
 
         void display_section_chars(int idx, size_t sec_offset);
