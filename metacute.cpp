@@ -172,7 +172,7 @@ void Meta::print_section_hdr(Elf64_Shdr *section, std::string section_name)
 
     std::vector<std::string> flags = get_hdr_flags(sh_flag_names, sh_flags,
                                                    section->sh_flags, SH_FLAGS);
-    for (std::string flag : flags)
+    for (auto flag : flags)
         std::cout << "[" << flag << "] ";
 
     printf(PRINT_TERM);
@@ -216,7 +216,7 @@ void Meta::print_segments(void)
                                                        segment->p_flags, 
                                                        PH_FLAGS);
 
-        for (std::string flag : flags)
+        for (auto flag : flags)
             std::cout << "[" << flag << "] ";
 
         printf(PRINT_TERM);
@@ -286,7 +286,7 @@ void Meta::print_sections(void)
     std::cout << std::endl << "File: " << file << std::endl << std::endl;
     load_sections();
 
-    for (std::pair<std::string, Elf64_Shdr *> item : sections) {
+    for (auto item : sections) {
         print_section_hdr(item.second, item.first);
 
         if (!(item.first.compare(".bss"))) {
