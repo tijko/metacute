@@ -254,6 +254,8 @@ class Meta {
 
         std::map<int, std::string> segment_types; 
         std::map<int, std::string> section_types;
+        std::map<std::string, std::string> section_links;
+        std::map<std::string, std::string> section_infos;
 
         std::map<int, std::string> 
         map_hdr_types(const char **type_names, unsigned int *type_values, 
