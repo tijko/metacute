@@ -106,14 +106,14 @@ int Elf::check_magic_number(std::vector<uint8_t> binary)
     return memcmp(ELFMAG, binary.data(), SELFMAG);
 }
 
-std::map<int, std::string>
-Meta::map_hdr_types(const char **type_names, unsigned int *type_values, 
-                                                          int type_num)
+std::map<unsigned long, std::string>
+Meta::map_types(const char **type_names, unsigned long *type_values, 
+                                                      long type_num)
 {
-    std::map<int, std::string> hdr_type_map;
+    std::map<unsigned long, std::string> hdr_type_map;
 
     for (int i=0; i < type_num; i++) {
-        int value = type_values[i];
+        long value = type_values[i];
         std::string name = type_names[i];
         hdr_type_map[value] = name;
     }
@@ -122,8 +122,8 @@ Meta::map_hdr_types(const char **type_names, unsigned int *type_values,
 }
 
 std::vector<std::string>
-Meta::get_hdr_flags(const char **flag_names, unsigned int *flag_values,
-                    int hdr_flags, int flag_num)
+Meta::get_hdr_flags(const char **flag_names, unsigned long *flag_values,
+                    long hdr_flags, int flag_num)
 {
     std::vector<std::string> flags;
 
@@ -190,7 +190,7 @@ std::string Meta::get_section_str(size_t sh_idx, size_t str_tbl_offset)
 
 void Meta::load_segments(void)
 {
-    segment_types = map_hdr_types(ph_names, (unsigned int *) &(ph_types[0]), PH_TYPES);
+    segment_types = map_types(ph_names, (unsigned long *) &(ph_types[0]), PH_TYPES);
 
     int phnum = elf.elf_hdr.e_phnum;
     size_t phsize = elf.elf_hdr.e_phentsize;
@@ -199,6 +199,49 @@ void Meta::load_segments(void)
     for (int i=0; i < phnum; i++) {
         size_t current_offset = phsize * i;
         segments.push_back((Elf64_Phdr *) &binary[current_offset + offset]);
+    }
+}
+
+void Meta::print_dynamics(void)
+{
+    load_segments();
+    load_dynamics();
+
+    for (auto dyn : dynamics) {
+        if (dyn->d_tag == DT_NULL) {
+            std::cout << dynamic_tags[dyn->d_tag] << std::endl;
+            break;
+        }
+
+        std::cout << dynamic_tags[dyn->d_tag] << std::endl;
+    }
+}
+
+void Meta::load_dynamics(void)
+{
+    dynamic_tags = map_types(dt_names, &(dt_tags[0]), DT_TYPES);
+
+    Elf64_Phdr *dynamic_phdr = NULL;
+    for (auto phdr : segments) {
+        if (phdr->p_type == PT_DYNAMIC) {
+            dynamic_phdr = phdr;
+            break;
+        }
+    }
+
+    if (dynamic_phdr == NULL)
+        return;
+
+    size_t offset = dynamic_phdr->p_offset;
+
+    // XXX adjust these loop-statements with offsets
+    for (int i=0;;i++) {
+        size_t current_offset = (i * DH_SIZE);
+        Elf64_Dyn *current = (Elf64_Dyn *) &(binary[offset + current_offset]);
+        dynamics.push_back(current);
+
+        if (current->d_tag == DT_NULL)
+            break;
     }
 }
 
@@ -216,7 +259,7 @@ void Meta::print_segments(void)
                                  segment->p_align);
 
         std::vector<std::string> flags = get_hdr_flags(ph_flag_names, 
-                                                     (unsigned int *) &(ph_flags[0]),
+                                                     (unsigned long *) &(ph_flags[0]),
                                                        segment->p_flags, 
                                                        PH_FLAGS);
 
@@ -236,7 +279,7 @@ void Meta::load_sections(void)
     size_t str_tbl_offset = ((Elf64_Shdr *) &binary[str_sec_offset])->sh_offset;
     size_t curr_offset = elf.elf_hdr.e_shoff;
 
-    section_types = map_hdr_types(sh_names, sh_types, SH_TYPES); 
+    section_types = map_types(sh_names, sh_types, SH_TYPES); 
     // Section-Header Table is 1-based table (not 0)
     // The first entry in the table is 0'd out
     for (int curr_sec_idx=1; curr_sec_idx < num_secs; curr_sec_idx++) {
@@ -342,7 +385,7 @@ int main(int argc, char *argv[])
     if (argc ^ 3)
         ERROR("Invalid options!");
 
-    const char *options = "esp";
+    const char *options = "desp";
     char opt = getopt(argc, argv, options);
     
     const char *file = argv[2];
@@ -355,6 +398,9 @@ int main(int argc, char *argv[])
 
     switch (opt) {
 
+        case ('d'):
+            metacute.print_dynamics();
+            break;
         case ('e'):
             metacute.print_elf();
             break;
