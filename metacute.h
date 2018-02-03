@@ -16,9 +16,11 @@
 // create on construction, if to be made compatible with 32-bit elfs
 #define SH_SIZE sizeof(Elf64_Shdr)
 #define PH_SIZE sizeof(Elf64_Phdr)
+#define DH_SIZE sizeof(Elf64_Dyn)
 
 #define SH_TYPES 33
 #define PH_TYPES 20
+#define DT_TYPES 72 
 
 #define SH_FLAGS 14
 #define PH_FLAGS 3
@@ -41,44 +43,44 @@
                          " Paddr: %#lx\n Vaddr: %#lx\n Memsz: %ld\t Align: %ld\n Flags: " \
 
 const char *sh_names[] = {
-    "SHT_NULL",
-    "SHT_PROGBITS",
-    "SHT_SYMTAB",
-    "SHT_STRTAB",
-    "SHT_RELA",
-    "SHT_HASH",
-    "SHT_DYNAMIC",
-    "SHT_NOTE",
-    "SHT_NOBITS",
-    "SHT_REL",
-    "SHT_SHLIB",
-    "SHT_DYNSYM",
-    "SHT_INIT_ARRAY",
-    "SHT_FINI_ARRAY",
-    "SHT_PREINIT_ARRAY",
-    "SHT_GROUP",
-    "SHT_SYMTAB_SHNDX",
-    "SHT_NUM",
-    "SHT_LOOS",
-    "SHT_GNU_ATTRIBUTES",
-    "SHT_GNU_HASH",
-    "SHT_GNU_LIBLIST",
-    "SHT_CHECKSUM",
-    "SHT_LOSUNW",
-    "SHT_SUNW_move",
-    "SHT_SUNW_COMDAT",
-    "SHT_SUNW_syminfo",
-    "SHT_GNU_verdef",
-    "SHT_GNU_verneed",
-    "SHT_HISUNW",       // These next 3 types share the same value.
-    "SHT_HIOS",         // Since I don't need HIOS or HISUNW, I put
-    "SHT_GNU_versym",   // them first so they don't intefere with the GNU_versym
-    "SHT_LOPROC",       // when building the hash table
-    "SHT_HIPROC",
-    "SHT_LOUSER",
+    "NULL",
+    "PROGBITS",
+    "SYMTAB",
+    "STRTAB",
+    "RELA",
+    "HASH",
+    "DYNAMIC",
+    "NOTE",
+    "NOBITS",
+    "REL",
+    "SHLIB",
+    "DYNSYM",
+    "INIT_ARRAY",
+    "FINI_ARRAY",
+    "PREINIT_ARRAY",
+    "GROUP",
+    "SYMTAB_SHNDX",
+    "NUM",
+    "LOOS",
+    "GNU_ATTRIBUTES",
+    "GNU_HASH",
+    "GNU_LIBLIST",
+    "CHECKSUM",
+    "LOSUNW",
+    "SUNW_move",
+    "SUNW_COMDAT",
+    "SUNW_syminfo",
+    "GNU_verdef",
+    "GNU_verneed",
+    "HISUNW",       // These next 3 types share the same value.
+    "HIOS",         // Since I don't need HIOS or HISUNW, I put
+    "GNU_versym",   // them first so they don't intefere with the GNU_versym
+    "LOPROC",       // when building the hash table
+    "HIPROC",
+    "LOUSER",
 };
 
-unsigned int sh_types[] = {
+unsigned long sh_types[] = {
     SHT_NULL,
     SHT_PROGBITS,
     SHT_SYMTAB,
@@ -134,7 +136,7 @@ const char *sh_flag_names[] {
     "EXCLUDE"
 };
 
-unsigned int sh_flags[] {
+unsigned long sh_flags[] {
     SHF_WRITE,
     SHF_ALLOC,
     SHF_EXECINSTR,
@@ -151,29 +153,29 @@ unsigned int sh_flags[] {
 };
 
 const char *ph_names[] {
-    "PT_NULL",
-    "PT_LOAD",
-    "PT_DYNAMIC",
-    "PT_INTERP",
-    "PT_NOTE",
-    "PT_SHLIB",
-    "PT_PHDR",
-    "PT_TLS",
-    "PT_NUM",
-    "PT_LOOS",
-    "PT_GNU_EH_FRAME",
-    "PT_GNU_STACK",
-    "PT_GNU_RELRO",
-    "PT_LOSUNW",
-    "PT_SUNWBSS",
-    "PT_SUNWSTACK",
-    "PT_HISUNW",
-    "PT_HIOS",
-    "PT_LOPROC",
-    "PT_HIPROC"
+    "NULL",
+    "LOAD",
+    "DYNAMIC",
+    "INTERP",
+    "NOTE",
+    "SHLIB",
+    "PHDR",
+    "TLS",
+    "NUM",
+    "LOOS",
+    "GNU_EH_FRAME",
+    "GNU_STACK",
+    "GNU_RELRO",
+    "LOSUNW",
+    "SUNWBSS",
+    "SUNWSTACK",
+    "HISUNW",
+    "HIOS",
+    "LOPROC",
+    "HIPROC"
 };
 
-int ph_types[] {
+unsigned long ph_types[] {
     PT_NULL,
     PT_LOAD,
     PT_DYNAMIC,
@@ -202,10 +204,162 @@ const char *ph_flag_names[] {
     "READ"
 };
 
-int ph_flags[] {
+unsigned long ph_flags[] {
     PF_X,
     PF_W,
     PF_R
+};
+
+const char *dt_names[] {
+    "NULL",
+    "NEEDED",
+    "PLTRELSZ",
+    "PLTGOT",
+    "HASH",
+    "STRTAB",
+    "SYMTAB",
+    "RELA",
+    "RELASZ",
+    "RELAENT",
+    "STRSZ",
+    "SYMENT",
+    "INIT",
+    "FINI",
+    "SONAME",
+    "RPATH",
+    "SYMBOLIC",
+    "REL",
+    "RELSZ",
+    "RELENT",
+    "PLTREL",
+    "DEBUG",
+    "TEXTREL",
+    "JMPREL",
+    "BIND_NOW",
+    "INIT_ARRAY",
+    "FINI_ARRAY",
+    "INIT_ARRAYSZ",
+    "FINI_ARRAYSZ",
+    "RUNPATH",
+    "FLAGS",
+    "ENCODING",
+    "PREINIT_ARRAY",
+    "PREINIT_ARRAYSZ",
+    "NUM",
+    "LOOS",
+    "HIOS",
+    "LOPROC",
+    "HIPROC",
+    "VALRNGLO",
+    "GNU_PRELINKED",
+    "GNU_CONFLICTSZ",
+    "GNU_LIBLISTSZ",
+    "CHECKSUM",
+    "PLTPADSZ",
+    "MOVEENT",
+    "MOVESZ",
+    "FEATURE_1",
+    "POSFLAG_1",
+    "SYMINSZ",
+    "SYMINENT",
+    "ADDRRNGLO",
+    "GNU_HASH",
+    "TLSDESC_PLT",
+    "TLSDESC_GOT",
+    "GNU_CONFLICT",
+    "GNU_LIBLIST",
+    "CONFIG",
+    "DEPAUDIT",
+    "AUDIT",
+    "PLTPAD",
+    "MOVETAB",
+    "SYMINFO",
+    "VERSYM",
+    "RELACOUNT",
+    "RELCOUNT",
+    "FLAGS_1",
+    "VERDEF",
+    "VERDEFNUM",
+    "VERNEED",
+    "VERNEEDNUM",
+    "AUXILLARY",
+    "FILTER",
+};
+
+unsigned long dt_tags[] {
+    DT_NULL,
+    DT_NEEDED,
+    DT_PLTRELSZ,
+    DT_PLTGOT,
+    DT_HASH,
+    DT_STRTAB,
+    DT_SYMTAB,
+    DT_RELA,
+    DT_RELASZ,
+    DT_RELAENT,
+    DT_STRSZ,
+    DT_SYMENT,
+    DT_INIT,
+    DT_FINI,
+    DT_SONAME,
+    DT_RPATH,
+    DT_SYMBOLIC,
+    DT_REL,
+    DT_RELSZ,
+    DT_RELENT,
+    DT_PLTREL,
+    DT_DEBUG,
+    DT_TEXTREL,
+    DT_JMPREL,
+    DT_BIND_NOW,
+    DT_INIT_ARRAY,
+    DT_FINI_ARRAY,
+    DT_INIT_ARRAYSZ,
+    DT_FINI_ARRAYSZ,
+    DT_RUNPATH,
+    DT_FLAGS,
+    DT_ENCODING,
+    DT_PREINIT_ARRAY,
+    DT_PREINIT_ARRAYSZ,
+    DT_NUM,
+    DT_LOOS,
+    DT_HIOS,
+    DT_LOPROC,
+    DT_HIPROC,
+    DT_VALRNGLO,
+    DT_GNU_PRELINKED,
+    DT_GNU_CONFLICTSZ,
+    DT_GNU_LIBLISTSZ,
+    DT_CHECKSUM,
+    DT_PLTPADSZ,
+    DT_MOVEENT,
+    DT_MOVESZ,
+    DT_FEATURE_1,
+    DT_POSFLAG_1,
+    DT_SYMINSZ,
+    DT_SYMINENT,
+    DT_ADDRRNGLO,
+    DT_GNU_HASH,
+    DT_TLSDESC_PLT,
+    DT_TLSDESC_GOT,
+    DT_GNU_CONFLICT,
+    DT_GNU_LIBLIST,
+    DT_CONFIG,
+    DT_DEPAUDIT,
+    DT_AUDIT,
+    DT_PLTPAD,
+    DT_MOVETAB,
+    DT_SYMINFO,
+    DT_VERSYM,
+    DT_RELACOUNT,
+    DT_RELCOUNT,
+    DT_FLAGS_1,
+    DT_VERDEF,
+    DT_VERDEFNUM,
+    DT_VERNEED,
+    DT_VERNEEDNUM,
+    DT_AUXILIARY,
+    DT_FILTER
 };
 
 void print_usage(void);
@@ -231,15 +385,18 @@ class Elf {
 class Meta {
 
     public:
+        // public v. private (review)
         Meta(const char *file, size_t file_size);
         std::string file;
         std::vector<uint8_t> binary;
 
         std::map<std::string, Elf64_Shdr *> sections;
+        std::vector<Elf64_Dyn *> dynamics;
         std::vector<Elf64_Phdr *> segments; 
 
         void print_sections(void);
         void print_segments(void);
+        void print_dynamics(void);
         void print_elf(void);
 
         Elf64_Ehdr get_elf(void);
@@ -249,21 +406,34 @@ class Meta {
         void load_elf(void);
         void load_sections(void); 
         void load_segments(void); 
+        void load_dynamics(void);
 
         void print_section_hdr(Elf64_Shdr *section, std::string section_name);
 
-        std::map<int, std::string> segment_types; 
-        std::map<int, std::string> section_types;
+        /*
+         * separate find-section and find-segment?
+         *
+         *   size_t find_segment(unsigned long pt_type);
+         *
+         * resolve string-name to type in separate
+         * the above will be relavent when the other flags
+         * for specific sections/segments are passed on cmd-line
+         */
+
+        std::map<unsigned long, std::string> segment_types; 
+        std::map<unsigned long, std::string> section_types;
+        std::map<unsigned long, std::string> dynamic_tags;
+
         std::map<std::string, std::string> section_links;
         std::map<std::string, std::string> section_infos;
 
-        std::map<int, std::string> 
-        map_hdr_types(const char **type_names, unsigned int *type_values, 
-                                         int type_num);
+        std::map<unsigned long, std::string> 
+        map_types(const char **type_names, unsigned long *type_values, 
+                                                        long type_num);
 
         std::vector<std::string>
-        get_hdr_flags(const char **flag_names, unsigned int *flag_values,
-                      int hdr_flags, int flag_num);
+        get_hdr_flags(const char **flag_names, unsigned long *flag_values,
+                      long hdr_flags, int flag_num);
 
         void display_section_chars(int idx, size_t sec_offset);
         std::string get_section_str(size_t sh_idx, size_t str_tbl_offset);
