@@ -190,16 +190,15 @@ std::string Meta::get_section_str(size_t sh_idx, size_t str_tbl_offset)
 
 void Meta::load_segments(void)
 {
-    segment_types = map_types(ph_names, (unsigned long *) &(ph_types[0]), PH_TYPES);
+    segment_types = map_types(ph_names, (unsigned long *) &(ph_types[0]),
+                                                               PH_TYPES);
 
     int phnum = elf.elf_hdr.e_phnum;
-    size_t phsize = elf.elf_hdr.e_phentsize;
-    size_t offset = elf.elf_hdr.e_phoff;
 
-    for (int i=0; i < phnum; i++) {
-        size_t current_offset = phsize * i;
-        segments.push_back((Elf64_Phdr *) &binary[current_offset + offset]);
-    }
+    Elf64_Phdr *segment_array = (Elf64_Phdr *) &binary[elf.elf_hdr.e_phoff];
+
+    while (phnum--)
+        segments.push_back(segment_array++);
 }
 
 void Meta::print_dynamics(void)
@@ -232,26 +231,16 @@ void Meta::load_dynamics(void)
     if (dynamic_phdr == NULL)
         return;
 
-    size_t offset = dynamic_phdr->p_offset;
-
-    // XXX adjust these loop-statements with offsets
-    for (int i=0;;i++) {
-        size_t current_offset = (i * DH_SIZE);
-        Elf64_Dyn *current = (Elf64_Dyn *) &(binary[offset + current_offset]);
-        dynamics.push_back(current);
-
-        if (current->d_tag == DT_NULL)
-            break;
-    }
+    for (Elf64_Dyn *dynamic = (Elf64_Dyn *) &(binary[dynamic_phdr->p_offset]);
+            dynamic->d_tag != DT_NULL; dynamics.push_back(dynamic++))
+        ;
 }
 
 void Meta::print_segments(void)
 {
     load_segments();
-    int total_segments = segments.size();
 
-    for (int i=0; i < total_segments; i++) {
-        Elf64_Phdr *segment = segments[i];
+    for (auto segment : segments) {
         std::string name = segment_types[segment->p_type];
         printf(PH_PRINT_FORMAT, name.c_str(), segment->p_offset, 
                                  segment->p_filesz, segment->p_paddr, 
@@ -259,9 +248,9 @@ void Meta::print_segments(void)
                                  segment->p_align);
 
         std::vector<std::string> flags = get_hdr_flags(ph_flag_names, 
-                                                     (unsigned long *) &(ph_flags[0]),
-                                                       segment->p_flags, 
-                                                       PH_FLAGS);
+                                        (unsigned long *) &(ph_flags[0]),
+                                                        segment->p_flags, 
+                                                        PH_FLAGS);
 
         for (auto flag : flags)
             std::cout << "[" << flag << "] ";
@@ -273,31 +262,27 @@ void Meta::print_segments(void)
 
 void Meta::load_sections(void)
 {
-    int num_secs = elf.elf_hdr.e_shnum;
+    int num_secs = elf.elf_hdr.e_shnum - 1;
     size_t str_sec_offset = elf.elf_hdr.e_shoff + 
                            (elf.elf_hdr.e_shstrndx * SH_SIZE);
     size_t str_tbl_offset = ((Elf64_Shdr *) &binary[str_sec_offset])->sh_offset;
-    size_t curr_offset = elf.elf_hdr.e_shoff;
 
     section_types = map_types(sh_names, sh_types, SH_TYPES); 
     // Section-Header Table is 1-based table (not 0)
     // The first entry in the table is 0'd out
-    for (int curr_sec_idx=1; curr_sec_idx < num_secs; curr_sec_idx++) {
+    for (Elf64_Shdr *shdr=(Elf64_Shdr *) &binary[elf.elf_hdr.e_shoff + SH_SIZE];
+            num_secs; shdr++, num_secs--) {
+        std::string name((char *) &binary[str_tbl_offset + shdr->sh_name]);
 
-        curr_offset += SH_SIZE;
-        Elf64_Shdr *section = (Elf64_Shdr *) &binary[curr_offset];
-        std::string name((char *) &binary[str_tbl_offset + section->sh_name]);
+        section_links[name] = shdr->sh_link ? get_section_str(shdr->sh_link,
+                                                              str_tbl_offset) :
+                                                                        "None";
 
-        section_links[name] = section->sh_link ? 
-                             get_section_str(section->sh_link,
-                                             str_tbl_offset) : "None";
-
-        section_infos[name] = section->sh_info && 
-                             (section->sh_type == SHT_REL ||
-                              section->sh_type == SHT_RELA) ? 
-                              get_section_str(section->sh_info, 
-                                              str_tbl_offset) : "None";
-        sections[name] = section;
+        section_infos[name] = shdr->sh_info && (shdr->sh_type == SHT_REL ||
+                                                shdr->sh_type == SHT_RELA) ?
+                              get_section_str(shdr->sh_info, str_tbl_offset) :
+                                                                       "None";
+        sections[name] = shdr;
     }
 }
 
