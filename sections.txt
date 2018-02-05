@@ -3,14 +3,14 @@ File: alt_print
 
 ------------------------------------------------------------
  Name: .bss	Size: 16	Offset: 4208
- Type:  SHT_NOBITS
+ Type:  NOBITS
  Link:  None
  Info:  None
  Flags: [WRITE] [ALLOC] 
 ------------------------------------------------------------
 ------------------------------------------------------------
  Name: .comment	Size: 52	Offset: 4208
- Type:  SHT_PROGBITS
+ Type:  PROGBITS
  Link:  None
  Info:  None
  Flags: [MERGE] [STRINGS] 
@@ -22,7 +22,7 @@ xxxxxx 31303900                            109.
 
 ------------------------------------------------------------
  Name: .data	Size: 24	Offset: 4184
- Type:  SHT_PROGBITS
+ Type:  PROGBITS
  Link:  None
  Info:  None
  Flags: [WRITE] [ALLOC] 
@@ -32,7 +32,7 @@ xxxxxx 31303900                            109.
 
 ------------------------------------------------------------
  Name: .debug_abbrev	Size: 330	Offset: 5409
- Type:  SHT_PROGBITS
+ Type:  PROGBITS
  Link:  None
  Info:  None
  Flags: [None] 
@@ -61,7 +61,7 @@ xxxxxx 19210049 132f0500 0000              .!.I./....
 
 ------------------------------------------------------------
  Name: .debug_aranges	Size: 48	Offset: 4260
- Type:  SHT_PROGBITS
+ Type:  PROGBITS
  Link:  None
  Info:  None
  Flags: [None] 
@@ -72,7 +72,7 @@ xxxxxx 00000000 00000000 00000000 00000000 ................
 
 ------------------------------------------------------------
  Name: .debug_info	Size: 1101	Offset: 4308
- Type:  SHT_PROGBITS
+ Type:  PROGBITS
  Link:  None
  Info:  None
  Flags: [None] 
@@ -149,7 +149,7 @@ xxxxxx a0000000 19910000 00ff0f00 00       .............
 
 ------------------------------------------------------------
  Name: .debug_line	Size: 274	Offset: 5739
- Type:  SHT_PROGBITS
+ Type:  PROGBITS
  Link:  None
  Info:  None
  Flags: [None] 
@@ -175,7 +175,7 @@ xxxxxx 0101                                ..
 
 ------------------------------------------------------------
  Name: .debug_str	Size: 749	Offset: 6013
- Type:  SHT_PROGBITS
+ Type:  PROGBITS
  Link:  None
  Info:  None
  Flags: [MERGE] [STRINGS] 
@@ -230,7 +230,7 @@ xxxxxx 74005f49 4f5f6c6f 636b5f74 00       t._IO_lock_t.
 
 ------------------------------------------------------------
  Name: .dynamic	Size: 464	Offset: 3616
- Type:  SHT_DYNAMIC
+ Type:  DYNAMIC
  Link:  .dynstr
  Info:  None
  Flags: [WRITE] [ALLOC] 
@@ -267,7 +267,7 @@ xxxxxx 74005f49 4f5f6c6f 636b5f74 00       t._IO_lock_t.
 
 ------------------------------------------------------------
  Name: .dynstr	Size: 117	Offset: 992
- Type:  SHT_STRTAB
+ Type:  STRTAB
  Link:  None
  Info:  None
  Flags: [ALLOC] 
@@ -283,7 +283,7 @@ xxxxxx 74005f49 4f5f6c6f 636b5f74 00       t._IO_lock_t.
 
 ------------------------------------------------------------
  Name: .dynsym	Size: 288	Offset: 704
- Type:  SHT_DYNSYM
+ Type:  DYNSYM
  Link:  .dynstr
  Info:  None
  Flags: [ALLOC] 
@@ -309,7 +309,7 @@ xxxxxx 74005f49 4f5f6c6f 636b5f74 00       t._IO_lock_t.
 
 ------------------------------------------------------------
  Name: .eh_frame	Size: 276	Offset: 2320
- Type:  SHT_PROGBITS
+ Type:  PROGBITS
  Link:  None
  Info:  None
  Flags: [ALLOC] 
@@ -335,7 +335,7 @@ xxxxxx 74005f49 4f5f6c6f 636b5f74 00       t._IO_lock_t.
 
 ------------------------------------------------------------
  Name: .eh_frame_hdr	Size: 60	Offset: 2260
- Type:  SHT_PROGBITS
+ Type:  PROGBITS
  Link:  None
  Info:  None
  Flags: [ALLOC] 
@@ -347,7 +347,7 @@ xxxxxx 74005f49 4f5f6c6f 636b5f74 00       t._IO_lock_t.
 
 ------------------------------------------------------------
  Name: .fini	Size: 9	Offset: 2196
- Type:  SHT_PROGBITS
+ Type:  PROGBITS
  Link:  None
  Info:  None
  Flags: [ALLOC] [EXECINSTR] 
@@ -356,7 +356,7 @@ xxxxxx 74005f49 4f5f6c6f 636b5f74 00       t._IO_lock_t.
 
 ------------------------------------------------------------
  Name: .fini_array	Size: 8	Offset: 3600
- Type:  SHT_FINI_ARRAY
+ Type:  FINI_ARRAY
  Link:  None
  Info:  None
  Flags: [WRITE] [ALLOC] 
@@ -365,7 +365,7 @@ xxxxxx 74005f49 4f5f6c6f 636b5f74 00       t._IO_lock_t.
 
 ------------------------------------------------------------
  Name: .gnu.hash	Size: 36	Offset: 664
- Type:  SHT_GNU_HASH
+ Type:  GNU_HASH
  Link:  .dynsym
  Info:  None
  Flags: [ALLOC] 
@@ -376,7 +376,7 @@ xxxxxx 74005f49 4f5f6c6f 636b5f74 00       t._IO_lock_t.
 
 ------------------------------------------------------------
  Name: .gnu.version	Size: 24	Offset: 1110
- Type:  SHT_GNU_versym
+ Type:  GNU_versym
  Link:  .dynsym
  Info:  None
  Flags: [ALLOC] 
@@ -386,7 +386,7 @@ xxxxxx 74005f49 4f5f6c6f 636b5f74 00       t._IO_lock_t.
 
 ------------------------------------------------------------
  Name: .gnu.version_r	Size: 32	Offset: 1136
- Type:  SHT_GNU_verneed
+ Type:  GNU_verneed
  Link:  .dynstr
  Info:  None
  Flags: [ALLOC] 
@@ -396,7 +396,7 @@ xxxxxx 74005f49 4f5f6c6f 636b5f74 00       t._IO_lock_t.
 
 ------------------------------------------------------------
  Name: .got	Size: 16	Offset: 4080
- Type:  SHT_PROGBITS
+ Type:  PROGBITS
  Link:  None
  Info:  None
  Flags: [WRITE] [ALLOC] 
@@ -405,7 +405,7 @@ xxxxxx 74005f49 4f5f6c6f 636b5f74 00       t._IO_lock_t.
 
 ------------------------------------------------------------
  Name: .got.plt	Size: 88	Offset: 4096
- Type:  SHT_PROGBITS
+ Type:  PROGBITS
  Link:  None
  Info:  None
  Flags: [WRITE] [ALLOC] 
@@ -419,7 +419,7 @@ xxxxxx 74005f49 4f5f6c6f 636b5f74 00       t._IO_lock_t.
 
 ------------------------------------------------------------
  Name: .init	Size: 23	Offset: 1432
- Type:  SHT_PROGBITS
+ Type:  PROGBITS
  Link:  None
  Info:  None
  Flags: [ALLOC] [EXECINSTR] 
@@ -429,7 +429,7 @@ xxxxxx 74005f49 4f5f6c6f 636b5f74 00       t._IO_lock_t.
 
 ------------------------------------------------------------
  Name: .init_array	Size: 8	Offset: 3592
- Type:  SHT_INIT_ARRAY
+ Type:  INIT_ARRAY
  Link:  None
  Info:  None
  Flags: [WRITE] [ALLOC] 
@@ -438,7 +438,7 @@ xxxxxx 74005f49 4f5f6c6f 636b5f74 00       t._IO_lock_t.
 
 ------------------------------------------------------------
  Name: .interp	Size: 28	Offset: 568
- Type:  SHT_PROGBITS
+ Type:  PROGBITS
  Link:  None
  Info:  None
  Flags: [ALLOC] 
@@ -448,7 +448,7 @@ xxxxxx 74005f49 4f5f6c6f 636b5f74 00       t._IO_lock_t.
 
 ------------------------------------------------------------
  Name: .jcr	Size: 8	Offset: 3608
- Type:  SHT_PROGBITS
+ Type:  PROGBITS
  Link:  None
  Info:  None
  Flags: [WRITE] [ALLOC] 
@@ -457,7 +457,7 @@ xxxxxx 74005f49 4f5f6c6f 636b5f74 00       t._IO_lock_t.
 
 ------------------------------------------------------------
  Name: .note.ABI-tag	Size: 32	Offset: 596
- Type:  SHT_NOTE
+ Type:  NOTE
  Link:  None
  Info:  None
  Flags: [ALLOC] 
@@ -467,7 +467,7 @@ xxxxxx 74005f49 4f5f6c6f 636b5f74 00       t._IO_lock_t.
 
 ------------------------------------------------------------
  Name: .note.gnu.build-id	Size: 36	Offset: 628
- Type:  SHT_NOTE
+ Type:  NOTE
  Link:  None
  Info:  None
  Flags: [ALLOC] 
@@ -478,7 +478,7 @@ xxxxxx 74005f49 4f5f6c6f 636b5f74 00       t._IO_lock_t.
 
 ------------------------------------------------------------
  Name: .plt	Size: 144	Offset: 1456
- Type:  SHT_PROGBITS
+ Type:  PROGBITS
  Link:  None
  Info:  None
  Flags: [ALLOC] [EXECINSTR] 
@@ -495,7 +495,7 @@ xxxxxx 74005f49 4f5f6c6f 636b5f74 00       t._IO_lock_t.
 
 ------------------------------------------------------------
  Name: .rela.dyn	Size: 72	Offset: 1168
- Type:  SHT_RELA
+ Type:  RELA
  Link:  .dynsym
  Info:  None
  Flags: [ALLOC] 
@@ -508,7 +508,7 @@ xxxxxx 74005f49 4f5f6c6f 636b5f74 00       t._IO_lock_t.
 
 ------------------------------------------------------------
  Name: .rela.plt	Size: 192	Offset: 1240
- Type:  SHT_RELA
+ Type:  RELA
  Link:  .dynsym
  Info:  .got.plt
  Flags: [ALLOC] [INFO_LINK] 
@@ -528,7 +528,7 @@ xxxxxx 74005f49 4f5f6c6f 636b5f74 00       t._IO_lock_t.
 
 ------------------------------------------------------------
  Name: .rodata	Size: 49	Offset: 2208
- Type:  SHT_PROGBITS
+ Type:  PROGBITS
  Link:  None
  Info:  None
  Flags: [ALLOC] 
@@ -540,7 +540,7 @@ xxxxxx 74005f49 4f5f6c6f 636b5f74 00       t._IO_lock_t.
 
 ------------------------------------------------------------
  Name: .shstrtab	Size: 328	Offset: 9297
- Type:  SHT_STRTAB
+ Type:  STRTAB
  Link:  None
  Info:  None
  Flags: [None] 
@@ -569,7 +569,7 @@ xxxxxx 6275675f 73747200                   bug_str.
 
 ------------------------------------------------------------
  Name: .strtab	Size: 633	Offset: 8664
- Type:  SHT_STRTAB
+ Type:  STRTAB
  Link:  None
  Info:  None
  Flags: [None] 
@@ -617,7 +617,7 @@ xxxxxx 42435f32 2e322e35 00                BC_2.2.5.
 
 ------------------------------------------------------------
  Name: .symtab	Size: 1896	Offset: 6768
- Type:  SHT_SYMTAB
+ Type:  SYMTAB
  Link:  .strtab
  Info:  None
  Flags: [None] 
@@ -744,7 +744,7 @@ xxxxxx 00000000 00000000                   ........
 
 ------------------------------------------------------------
  Name: .text	Size: 594	Offset: 1600
- Type:  SHT_PROGBITS
+ Type:  PROGBITS
  Link:  None
  Info:  None
  Flags: [ALLOC] [EXECINSTR] 
