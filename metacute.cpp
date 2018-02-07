@@ -233,9 +233,6 @@ void Meta::print_dynamics(void)
                                                      &(df_posflag_1[0]),
                                                         DF_FLAGS_POS_1);
 
-    // get the long of all d-tags pad added if needed
-    // tab the rest
-    //
     for (auto dyn : dynamics) {
 
         std::cout << '\t' << dynamic_tags[dyn->d_tag];
