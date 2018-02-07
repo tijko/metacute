@@ -13,6 +13,8 @@
 #define ALIGN_SECTION_WIDTH 36
 #define ALIGN_OUTPUT 15
 
+#define ALIGN_DYNAMIC 15
+
 // create on construction, if to be made compatible with 32-bit elfs
 #define SH_SIZE sizeof(Elf64_Shdr)
 #define PH_SIZE sizeof(Elf64_Phdr)
@@ -529,5 +531,7 @@ class Meta {
         void display_section_chars(int idx, size_t sec_offset);
         std::string get_section_str(size_t sh_idx, size_t str_tbl_offset);
         std::ifstream file_handle;
+
+        void add_white_space(size_t length);
 };
 

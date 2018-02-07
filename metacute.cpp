@@ -201,6 +201,13 @@ void Meta::load_segments(void)
         segments.push_back(segment_array++);
 }
 
+void Meta::add_white_space(size_t length)
+{
+    for (int ws=ALIGN_DYNAMIC-length; ws; ws--)
+        std::cout << ' ';
+    std::cout << "\t\t\t";
+}
+
 void Meta::print_dynamics(void)
 {
     load_segments();
@@ -229,6 +236,7 @@ void Meta::print_dynamics(void)
     for (auto dyn : dynamics) {
 
         std::cout << '\t' << dynamic_tags[dyn->d_tag];
+        add_white_space(dynamic_tags[dyn->d_tag].size());
 
         switch (dyn->d_tag) {
 
@@ -241,7 +249,6 @@ void Meta::print_dynamics(void)
             case DT_CONFIG:
             case DT_DEPAUDIT:
             case DT_AUDIT: {
-                std::cout << std::setw(36);
                 std::cout << (char *) &binary[dyn->d_un.d_val + dynstr];
                 std::cout << std::endl;
                 break;
@@ -261,10 +268,11 @@ void Meta::print_dynamics(void)
             case DT_PREINIT_ARRAY:
             case DT_SYMINFO:
             case DT_VERDEF:
+            case DT_VERSYM:
             case DT_VERNEED:
             case DT_MOVETAB: {
-                std::cout << std::setw(36);
-                std::cout << std::hex << dyn->d_un.d_ptr << std::endl;
+                std::cout << std::showbase << std::hex;
+                std::cout << dyn->d_un.d_ptr << std::endl;
                 break;
             }
 
@@ -282,20 +290,19 @@ void Meta::print_dynamics(void)
             case DT_SYMINSZ:
             case DT_MOVEENT:
             case DT_MOVESZ: {
-                std::cout << std::setw(36);
-                std::cout << "bytes(" << dyn->d_un.d_val << ")" << std::endl;
+                std::cout << "(" << std::dec << dyn->d_un.d_val;
+                std::cout << ") bytes" << std::endl;
                 break;
             }
 
             case DT_SYMBOLIC:
             case DT_DEBUG:
             case DT_GNU_HASH: {
-                std::cout << std::endl;
+                std::cout << "0x0" << std::endl;
                 break;
             }
 
             case DT_PLTREL: {
-                std::cout << std::setw(36);
                 const char *r_type = dyn->d_un.d_val == DT_REL ? "REL" : "RELA";
                 std::cout << r_type << std::endl;
                 break;
@@ -307,7 +314,6 @@ void Meta::print_dynamics(void)
             }
 
             case DT_POSFLAG_1: {
-                std::cout << std::setw(36);
                 std::cout << flags_pos[dyn->d_un.d_val] << std::endl; 
                 break;
             }
@@ -319,20 +325,18 @@ void Meta::print_dynamics(void)
             case DT_VERNEEDNUM:
             case DT_RELACOUNT:
             case DT_RELCOUNT: {
-                std::cout << std::setw(36);
                 std::cout << dyn->d_un.d_val << std::endl;
                 break;
             }
 
             case DT_FLAGS_1: {
-                std::cout << std::setw(36);
-                std::cout << flags_1[dyn->d_un.d_val];
-                std::cout << std::endl;
+                std::cout << flags_1[dyn->d_un.d_val] << std::endl;
                 break;
             }
         }
     }
 
+    printf(PRINT_TERM);
     std::cout << std::endl;
 }
 
