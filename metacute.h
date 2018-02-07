@@ -24,6 +24,9 @@
 
 #define SH_FLAGS 14
 #define PH_FLAGS 3
+#define DF_FLAGS 5
+#define DF_FLAGS_1 26
+#define DF_FLAGS_POS_1 2
 
 
 #define ELF_PRINT_FORMAT "------------------------------------------------------------\n" \
@@ -36,11 +39,15 @@
                          " Name: %s\tSize: %lu\tOffset: %lu\n Type:  %s\n"                \
                          " Link:  %s\n Info:  %s\n Flags: "                               \
 
-#define PRINT_TERM       "\n------------------------------------------------------------" \
-
 #define PH_PRINT_FORMAT "------------------------------------------------------------\n"  \
                          " Type: %s\t Offset: %ld\t Filesz: %ld\n"                        \
                          " Paddr: %#lx\n Vaddr: %#lx\n Memsz: %ld\t Align: %ld\n Flags: " \
+
+#define DT_PRINT_FORMAT "------------------------------------------------------------\n"  \
+                        "     Dynamic Tag                         Name/Value           "  \
+                        
+#define PRINT_TERM       "\n------------------------------------------------------------" \
+
 
 const char *sh_names[] = {
     "NULL",
@@ -360,6 +367,90 @@ unsigned long dt_tags[] {
     DT_VERNEEDNUM,
     DT_AUXILIARY,
     DT_FILTER
+};
+
+const char *df_flag_names[] = {
+    "ORIGIN",
+    "SYMBOLIC",
+    "TEXTREL",
+    "BIND-NOW",
+    "STATIC-TLS"
+};
+
+unsigned long df_flags[] = {
+    DF_ORIGIN,
+    DF_SYMBOLIC,
+    DF_TEXTREL,
+    DF_BIND_NOW,
+    DF_STATIC_TLS
+};
+
+const char *df_flags_1_names[] = {
+    "NOW",
+    "GLOBAL",
+    "GROUP",
+    "NODELETE",
+    "LOADFLTR",
+    "INITFIRST",
+    "NOOPEN",
+    "ORIGIN",
+    "DIRECT",
+    "TRANS",
+    "INTERPOSE",
+    "NODEFLIB",
+    "NODUMP",
+    "CONFALT",
+    "ENDFILTEE",
+    "DISPRELDNE",
+    "DISPRELPND",
+    "NODIRECT",
+    "IGNMULDEF",
+    "NOKSYSMS",
+    "NOHDR",
+    "EDITED",
+    "NORELOC",
+    "SYMINTERPOSE",
+    "GLOBAUDIT",
+    "SINGLETON",
+};
+
+unsigned long df_flags_1[] = {
+    DF_1_NOW,
+    DF_1_GLOBAL,
+    DF_1_GROUP,
+    DF_1_NODELETE,
+    DF_1_LOADFLTR,
+    DF_1_INITFIRST,
+    DF_1_NOOPEN,
+    DF_1_ORIGIN,
+    DF_1_DIRECT,
+    DF_1_TRANS,
+    DF_1_INTERPOSE,
+    DF_1_NODEFLIB,
+    DF_1_NODUMP,
+    DF_1_CONFALT,
+    DF_1_ENDFILTEE,
+    DF_1_DISPRELDNE,
+    DF_1_DISPRELPND,
+    DF_1_NODIRECT,
+    DF_1_IGNMULDEF,
+    DF_1_NOKSYMS,
+    DF_1_NOHDR,
+    DF_1_EDITED,
+    DF_1_NORELOC,
+    DF_1_SYMINTPOSE,
+    DF_1_GLOBAUDIT,
+    DF_1_SINGLETON,
+};
+
+const char *df_posflag_1_names[] = {
+    "LAZYLOAD",
+    "GROUPPERM"
+};
+
+unsigned long df_posflag_1[] = {
+    DF_P1_LAZYLOAD,
+    DF_P1_GROUPPERM
 };
 
 void print_usage(void);

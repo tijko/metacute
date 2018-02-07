@@ -204,16 +204,136 @@ void Meta::load_segments(void)
 void Meta::print_dynamics(void)
 {
     load_segments();
+    load_sections();
     load_dynamics();
 
-    for (auto dyn : dynamics) {
-        if (dyn->d_tag == DT_NULL) {
-            std::cout << dynamic_tags[dyn->d_tag] << std::endl;
-            break;
-        }
+    int dynstr = sections[".dynstr"]->sh_offset;
 
-        std::cout << dynamic_tags[dyn->d_tag] << std::endl;
+    printf(DT_PRINT_FORMAT);
+    printf(PRINT_TERM);
+    std::cout << std::endl;
+
+    std::map<unsigned long, std::string> flags = map_types(df_flag_names, 
+                                                          &(df_flags[0]), 
+                                                               DF_FLAGS);
+
+    std::map<unsigned long, std::string> flags_1 = map_types(df_flags_1_names,
+                                                             &(df_flags_1[0]),
+                                                                  DF_FLAGS_1);
+
+    std::map<unsigned long, std::string> flags_pos = map_types(
+                                                     df_posflag_1_names,
+                                                     &(df_posflag_1[0]),
+                                                        DF_FLAGS_POS_1);
+
+    for (auto dyn : dynamics) {
+
+        std::cout << '\t' << dynamic_tags[dyn->d_tag];
+
+        switch (dyn->d_tag) {
+
+            case DT_NEEDED:
+            case DT_SONAME:
+            case DT_RPATH:
+            case DT_RUNPATH:
+            case DT_AUXILIARY:
+            case DT_FILTER:
+            case DT_CONFIG:
+            case DT_DEPAUDIT:
+            case DT_AUDIT: {
+                std::cout << std::setw(36);
+                std::cout << (char *) &binary[dyn->d_un.d_val + dynstr];
+                std::cout << std::endl;
+                break;
+            }
+
+            case DT_PLTGOT:
+            case DT_HASH:
+            case DT_STRTAB:
+            case DT_SYMTAB:
+            case DT_RELA:
+            case DT_INIT:
+            case DT_FINI:
+            case DT_REL:
+            case DT_JMPREL:
+            case DT_INIT_ARRAY:
+            case DT_FINI_ARRAY:
+            case DT_PREINIT_ARRAY:
+            case DT_SYMINFO:
+            case DT_VERDEF:
+            case DT_VERNEED:
+            case DT_MOVETAB: {
+                std::cout << std::setw(36);
+                std::cout << std::hex << dyn->d_un.d_ptr << std::endl;
+                break;
+            }
+
+            case DT_PLTRELSZ:
+            case DT_RELASZ:
+            case DT_RELAENT:
+            case DT_STRSZ:
+            case DT_SYMENT:
+            case DT_RELSZ:
+            case DT_RELENT:
+            case DT_INIT_ARRAYSZ:
+            case DT_FINI_ARRAYSZ:
+            case DT_PREINIT_ARRAYSZ:
+            case DT_SYMINENT:
+            case DT_SYMINSZ:
+            case DT_MOVEENT:
+            case DT_MOVESZ: {
+                std::cout << std::setw(36);
+                std::cout << "bytes(" << dyn->d_un.d_val << ")" << std::endl;
+                break;
+            }
+
+            case DT_SYMBOLIC:
+            case DT_DEBUG:
+            case DT_GNU_HASH: {
+                std::cout << std::endl;
+                break;
+            }
+
+            case DT_PLTREL: {
+                std::cout << std::setw(36);
+                const char *r_type = dyn->d_un.d_val == DT_REL ? "REL" : "RELA";
+                std::cout << r_type << std::endl;
+                break;
+            }
+                
+            case DT_TEXTREL: {
+                std::cout << std::endl;
+                break; 
+            }
+
+            case DT_POSFLAG_1: {
+                std::cout << std::setw(36);
+                std::cout << flags_pos[dyn->d_un.d_val] << std::endl; 
+                break;
+            }
+
+            case DT_BIND_NOW:
+                break;
+                
+            case DT_VERDEFNUM:
+            case DT_VERNEEDNUM:
+            case DT_RELACOUNT:
+            case DT_RELCOUNT: {
+                std::cout << std::setw(36);
+                std::cout << dyn->d_un.d_val << std::endl;
+                break;
+            }
+
+            case DT_FLAGS_1: {
+                std::cout << std::setw(36);
+                std::cout << flags_1[dyn->d_un.d_val];
+                std::cout << std::endl;
+                break;
+            }
+        }
     }
+
+    std::cout << std::endl;
 }
 
 void Meta::load_dynamics(void)
