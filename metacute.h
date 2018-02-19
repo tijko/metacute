@@ -19,10 +19,14 @@
 #define SH_SIZE sizeof(Elf64_Shdr)
 #define PH_SIZE sizeof(Elf64_Phdr)
 #define DH_SIZE sizeof(Elf64_Dyn)
+#define SY_SIZE sizeof(Elf64_Sym)
 
 #define SH_TYPES 33
 #define PH_TYPES 20
 #define DT_TYPES 72 
+#define SY_TYPES 7
+
+#define SY_BINDS 3
 
 #define SH_FLAGS 14
 #define PH_FLAGS 3
@@ -48,6 +52,9 @@
 #define DT_PRINT_FORMAT "------------------------------------------------------------\n"  \
                         "     Dynamic Tag                         Name/Value           "  \
                         
+#define SY_PRINT_FORMAT "------------------------------------------------------------\n"  \
+                        " Address  Type\t\t Bind                                       "  \
+
 #define PRINT_TERM       "\n------------------------------------------------------------" \
 
 
@@ -455,6 +462,38 @@ unsigned long df_posflag_1[] = {
     DF_P1_GROUPPERM
 };
 
+const char *sym_names[] = {
+    "NOTYPE",
+    "OBJECT",
+    "FUNC",
+    "SECTION",
+    "FILE",
+    "COMMON",
+    "TLS",
+};
+
+unsigned long sym_types[] = {
+    STT_NOTYPE,
+    STT_OBJECT,
+    STT_FUNC,
+    STT_SECTION,
+    STT_FILE,
+    STT_COMMON,
+    STT_TLS,
+};
+
+const char *sym_bind_names[] = {
+    "LOCAL",
+    "GLOBAL",
+    "WEAK"
+};
+
+unsigned long sym_binds[] = {
+    STB_LOCAL,
+    STB_GLOBAL,
+    STB_WEAK
+};
+
 void print_usage(void);
 
 
@@ -483,14 +522,17 @@ class Meta {
         std::string file;
         std::vector<uint8_t> binary;
 
+        // XXX create an opaque type and hold just single vector
         std::map<std::string, Elf64_Shdr *> sections;
         std::vector<Elf64_Dyn *> dynamics;
         std::vector<Elf64_Phdr *> segments; 
+        std::vector<Elf64_Sym *> symbols;
 
+        void print_elf(void);
         void print_sections(void);
         void print_segments(void);
         void print_dynamics(void);
-        void print_elf(void);
+        void print_symbols(void);
 
         Elf64_Ehdr get_elf(void);
 
@@ -500,8 +542,11 @@ class Meta {
         void load_sections(void); 
         void load_segments(void); 
         void load_dynamics(void);
+        void load_symbols(void);
 
         void print_section_hdr(Elf64_Shdr *section, std::string section_name);
+        void display_section_chars(int idx, size_t sec_offset);
+        std::string get_section_str(size_t sh_idx, size_t str_tbl_offset);
 
         /*
          * separate find-section and find-segment?
@@ -513,9 +558,17 @@ class Meta {
          * for specific sections/segments are passed on cmd-line
          */
 
+        // XXX as noted above cut down on structures by using generics
+        // and passing along function ptrs
         std::map<unsigned long, std::string> segment_types; 
+        
         std::map<unsigned long, std::string> section_types;
+        
         std::map<unsigned long, std::string> dynamic_tags;
+
+        std::map<unsigned long, std::string> symbol_types;
+        std::map<unsigned long, std::string> symbol_binds;
+        // XXX visibility
 
         std::map<std::string, std::string> section_links;
         std::map<std::string, std::string> section_infos;
@@ -528,10 +581,8 @@ class Meta {
         get_hdr_flags(const char **flag_names, unsigned long *flag_values,
                       long hdr_flags, int flag_num);
 
-        void display_section_chars(int idx, size_t sec_offset);
-        std::string get_section_str(size_t sh_idx, size_t str_tbl_offset);
-        std::ifstream file_handle;
-
         void add_white_space(size_t length);
+
+        std::ifstream file_handle;
 };
 
