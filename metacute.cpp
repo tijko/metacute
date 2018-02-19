@@ -14,9 +14,10 @@ void print_usage(void)
 {
     std::cout << "Usage: metacute <option> <file-path>" << std::endl;
     std::cout << "Options:" << std::endl;
-    std::cout << "\t -e dump elf-header" << std::endl;
-    std::cout << "\t -s dump sections" << std::endl;
+    std::cout << "\t -e dump program elf-header" << std::endl;
+    std::cout << "\t -S dump program sections" << std::endl;
     std::cout << "\t -p dump program segments" << std::endl;
+    std::cout << "\t -s dump program symbols" << std::endl;
 }
 
 Elf::Elf(std::vector<uint8_t> binary)
@@ -119,6 +120,64 @@ void Meta::print_elf(void)
                              addr, elf.elf_osabi, elf.elf_hdr.e_phnum, 
                              elf.elf_hdr.e_shnum, elf.elf_hdr.e_phoff, 
                              elf.elf_hdr.e_shoff);
+}
+
+void Meta::load_symbols(void)
+{
+    load_sections();
+
+    symbol_types = map_types(sym_names, &(sym_types[0]), SY_TYPES);
+    symbol_binds = map_types(sym_bind_names, &(sym_binds[0]), SY_BINDS); 
+
+    Elf64_Shdr *symtab = sections[".symtab"];
+    size_t sym_count = symtab->sh_size / SY_SIZE;
+
+    Elf64_Sym *sym = (Elf64_Sym *) &(binary[symtab->sh_offset]);
+
+    while (sym_count--)
+        symbols.push_back(sym++);
+}
+
+void Meta::print_symbols(void)
+{
+    load_symbols();
+    Elf64_Shdr *strtab = sections[".strtab"];
+    size_t str_offset = strtab->sh_offset;
+
+    std::cout << SY_PRINT_FORMAT;
+    std::cout << PRINT_TERM << std::endl;;
+
+    for (auto sym : symbols) {
+
+        size_t type = ELF64_ST_TYPE(sym->st_info);
+        size_t bind = ELF64_ST_BIND(sym->st_info);
+
+        if (sym->st_value == 0)
+            std::cout << "0x000000" << " ";
+        else
+            std::cout << std::showbase << std::hex << sym->st_value << " ";
+
+        if (type != STT_SECTION)
+            std::cout << symbol_types[type] << "\t\t";
+        else
+            std::cout << symbol_types[type] << "\t";
+
+        std::cout << symbol_binds[bind] << "\t";
+
+        switch (type) {
+            case (STT_OBJECT):
+            case (STT_FILE):
+            case (STT_FUNC): {
+                size_t name_offset = sym->st_name;
+                std::cout << (char *) &(binary[name_offset + str_offset]);
+                break;
+            }
+            default:
+                break;
+        }
+
+        std::cout << std::endl;
+    }
 }
 
 void Meta::print_dynamics(void)
@@ -496,7 +555,7 @@ int main(int argc, char *argv[])
     if (argc ^ 3)
         ERROR("Invalid options!");
 
-    const char *options = "desp";
+    const char *options = "deSps";
     char opt = getopt(argc, argv, options);
     
     const char *file = argv[2];
@@ -515,11 +574,14 @@ int main(int argc, char *argv[])
         case ('e'):
             metacute.print_elf();
             break;
-        case ('s'):
+        case ('S'):
             metacute.print_sections();
             break;
         case ('p'):
             metacute.print_segments();
+            break;
+        case ('s'):
+            metacute.print_symbols();
             break;
         default:
             ERROR("Invalid options!");
