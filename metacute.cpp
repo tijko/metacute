@@ -106,51 +106,9 @@ int Elf::check_magic_number(std::vector<uint8_t> binary)
     return memcmp(ELFMAG, binary.data(), SELFMAG);
 }
 
-std::map<unsigned long, std::string>
-Meta::map_types(const char **type_names, unsigned long *type_values, 
-                                                      long type_num)
+Elf64_Ehdr Meta::get_elf(void)
 {
-    std::map<unsigned long, std::string> hdr_type_map;
-
-    for (int i=0; i < type_num; i++) {
-        long value = type_values[i];
-        std::string name = type_names[i];
-        hdr_type_map[value] = name;
-    }
-
-    return hdr_type_map;
-}
-
-std::vector<std::string>
-Meta::get_hdr_flags(const char **flag_names, unsigned long *flag_values,
-                    long hdr_flags, int flag_num)
-{
-    std::vector<std::string> flags;
-
-    for (int flag=0; flag < flag_num; flag++) {
-        if (flag_values[flag] & hdr_flags)
-            flags.push_back(flag_names[flag]);
-    } 
-
-    if (flags.empty())
-        flags.push_back("None");
-
-    return flags;
-}
-
-Meta::Meta(const char *file, size_t file_size)
-{
-    this->file = file;
-    file_handle.open(file, std::ios::binary | std::ios::in);
-
-    if (!file_handle.is_open())
-        ERROR(strerror(errno));
-
-    binary.resize(file_size);
-    file_handle.read((char *) &binary[0], file_size);
-    file_handle.close();
-
-    elf = Elf(binary);
+    return elf.elf_hdr;
 }
 
 void Meta::print_elf(void)
@@ -163,53 +121,9 @@ void Meta::print_elf(void)
                              elf.elf_hdr.e_shoff);
 }
 
-void Meta::print_section_hdr(Elf64_Shdr *section, std::string section_name)
-{
-    Elf64_Word type = section->sh_type;
-    std::string link = section_links[section_name];
-    std::string info = section_infos[section_name];
-
-    printf(SH_PRINT_FORMAT, section_name.c_str(), section->sh_size, 
-                             section->sh_offset, section_types[type].c_str(), 
-                             link.c_str(), info.c_str());
-
-    std::vector<std::string> flags = get_hdr_flags(sh_flag_names, sh_flags,
-                                                   section->sh_flags, SH_FLAGS);
-    for (auto flag : flags)
-        std::cout << "[" << flag << "] ";
-
-    printf(PRINT_TERM);
-}
-
-std::string Meta::get_section_str(size_t sh_idx, size_t str_tbl_offset)
-{
-    int sh_offset = elf.elf_hdr.e_shoff + (sh_idx * SH_SIZE);
-    int str_offset = ((Elf64_Shdr *) &binary[sh_offset])->sh_name;
-    return std::string((char *) &binary[str_offset + str_tbl_offset]);
-}
-
-void Meta::load_segments(void)
-{
-    segment_types = map_types(ph_names, (unsigned long *) &(ph_types[0]),
-                                                               PH_TYPES);
-
-    int phnum = elf.elf_hdr.e_phnum;
-
-    Elf64_Phdr *segment_array = (Elf64_Phdr *) &binary[elf.elf_hdr.e_phoff];
-
-    while (phnum--)
-        segments.push_back(segment_array++);
-}
-
-void Meta::add_white_space(size_t length)
-{
-    for (int ws=ALIGN_DYNAMIC-length; ws; ws--)
-        std::cout << ' ';
-    std::cout << "\t\t\t";
-}
-
 void Meta::print_dynamics(void)
 {
+    // XXX pull dynamic from sections map
     load_segments();
     load_sections();
     load_dynamics();
@@ -352,12 +266,26 @@ void Meta::load_dynamics(void)
         }
     }
 
+    // XXX add check after call
     if (dynamic_phdr == NULL)
         return;
 
     for (Elf64_Dyn *dynamic = (Elf64_Dyn *) &(binary[dynamic_phdr->p_offset]);
             dynamic->d_tag != DT_NULL; dynamics.push_back(dynamic++))
         ;
+}
+
+void Meta::load_segments(void)
+{
+    segment_types = map_types(ph_names, (unsigned long *) &(ph_types[0]),
+                                                               PH_TYPES);
+
+    int phnum = elf.elf_hdr.e_phnum;
+
+    Elf64_Phdr *segment_array = (Elf64_Phdr *) &binary[elf.elf_hdr.e_phoff];
+
+    while (phnum--)
+        segments.push_back(segment_array++);
 }
 
 void Meta::print_segments(void)
@@ -382,6 +310,31 @@ void Meta::print_segments(void)
         printf(PRINT_TERM);
         std::cout << std::endl;
     } 
+}
+
+void Meta::print_section_hdr(Elf64_Shdr *section, std::string section_name)
+{
+    Elf64_Word type = section->sh_type;
+    std::string link = section_links[section_name];
+    std::string info = section_infos[section_name];
+
+    printf(SH_PRINT_FORMAT, section_name.c_str(), section->sh_size, 
+                             section->sh_offset, section_types[type].c_str(), 
+                             link.c_str(), info.c_str());
+
+    std::vector<std::string> flags = get_hdr_flags(sh_flag_names, sh_flags,
+                                                   section->sh_flags, SH_FLAGS);
+    for (auto flag : flags)
+        std::cout << "[" << flag << "] ";
+
+    printf(PRINT_TERM);
+}
+
+std::string Meta::get_section_str(size_t sh_idx, size_t str_tbl_offset)
+{
+    int sh_offset = elf.elf_hdr.e_shoff + (sh_idx * SH_SIZE);
+    int str_offset = ((Elf64_Shdr *) &binary[sh_offset])->sh_name;
+    return std::string((char *) &binary[str_offset + str_tbl_offset]);
 }
 
 void Meta::load_sections(void)
@@ -484,9 +437,58 @@ void Meta::print_sections(void)
     }
 }
 
-Elf64_Ehdr Meta::get_elf(void)
+std::map<unsigned long, std::string>
+Meta::map_types(const char **type_names, unsigned long *type_values, 
+                                                      long type_num)
 {
-    return elf.elf_hdr;
+    std::map<unsigned long, std::string> hdr_type_map;
+
+    for (int i=0; i < type_num; i++) {
+        long value = type_values[i];
+        std::string name = type_names[i];
+        hdr_type_map[value] = name;
+    }
+
+    return hdr_type_map;
+}
+
+std::vector<std::string>
+Meta::get_hdr_flags(const char **flag_names, unsigned long *flag_values,
+                    long hdr_flags, int flag_num)
+{
+    std::vector<std::string> flags;
+
+    for (int flag=0; flag < flag_num; flag++) {
+        if (flag_values[flag] & hdr_flags)
+            flags.push_back(flag_names[flag]);
+    } 
+
+    if (flags.empty())
+        flags.push_back("None");
+
+    return flags;
+}
+
+void Meta::add_white_space(size_t length)
+{
+    for (int ws=ALIGN_DYNAMIC-length; ws; ws--)
+        std::cout << ' ';
+    std::cout << "\t\t\t";
+}
+
+Meta::Meta(const char *file, size_t file_size)
+{
+    this->file = file;
+    file_handle.open(file, std::ios::binary | std::ios::in);
+
+    if (!file_handle.is_open())
+        ERROR(strerror(errno));
+
+    binary.resize(file_size);
+    file_handle.read((char *) &binary[0], file_size);
+    file_handle.close();
+
+    elf = Elf(binary);
 }
 
 int main(int argc, char *argv[])
