@@ -1,0 +1,28 @@
+------------------------------------------------------------
+     Dynamic Tag                         Name/Value           
+------------------------------------------------------------
+	NEEDED         			libc.so.6
+	INIT           			0x400598
+	FINI           			0x400894
+	INIT_ARRAY     			0x600e08
+	INIT_ARRAYSZ   			(8) bytes
+	FINI_ARRAY     			0x600e10
+	FINI_ARRAYSZ   			(8) bytes
+	GNU_HASH       			0x0
+	STRTAB         			0x4003e0
+	SYMTAB         			0x4002c0
+	STRSZ          			(117) bytes
+	SYMENT         			(24) bytes
+	DEBUG          			0x0
+	PLTGOT         			0x601000
+	PLTRELSZ       			(192) bytes
+	PLTREL         			RELA
+	JMPREL         			0x4004d8
+	RELA           			0x400490
+	RELASZ         			(72) bytes
+	RELAENT        			(24) bytes
+	VERNEED        			0x400470
+	VERNEEDNUM     			0x1
+	VERSYM         			0x400456
+
+------------------------------------------------------------
