@@ -182,8 +182,6 @@ void Meta::print_symbols(void)
 
 void Meta::print_dynamics(void)
 {
-    // XXX pull dynamic from sections map
-    load_segments();
     load_sections();
     load_dynamics();
 
@@ -316,22 +314,13 @@ void Meta::print_dynamics(void)
 void Meta::load_dynamics(void)
 {
     dynamic_tags = map_types(dt_names, &(dt_tags[0]), DT_TYPES);
+    Elf64_Shdr *dynsec = sections[".dynamic"];
+    size_t dynamic_offset = dynsec->sh_offset;
+    size_t dynamic_count = dynsec->sh_size / DH_SIZE;
 
-    Elf64_Phdr *dynamic_phdr = NULL;
-    for (auto phdr : segments) {
-        if (phdr->p_type == PT_DYNAMIC) {
-            dynamic_phdr = phdr;
-            break;
-        }
-    }
-
-    // XXX add check after call
-    if (dynamic_phdr == NULL)
-        return;
-
-    for (Elf64_Dyn *dynamic = (Elf64_Dyn *) &(binary[dynamic_phdr->p_offset]);
-            dynamic->d_tag != DT_NULL; dynamics.push_back(dynamic++))
-        ;
+    Elf64_Dyn *dynamic = (Elf64_Dyn *) &(binary[dynamic_offset]);
+    while (dynamic_count-- && dynamic->d_tag != DT_NULL)
+        dynamics.push_back(dynamic++);
 }
 
 void Meta::load_segments(void)
