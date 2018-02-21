@@ -27,6 +27,7 @@
 #define SY_TYPES 7
 
 #define SY_BINDS 3
+#define SY_VISIS 4
 
 #define SH_FLAGS 14
 #define PH_FLAGS 3
@@ -53,7 +54,7 @@
                         "     Dynamic Tag                         Name/Value           "  \
                         
 #define SY_PRINT_FORMAT "------------------------------------------------------------\n"  \
-                        " Address  Type\t\t Bind                                       "  \
+                        " Address  Type\t\t Bind\t Visibility   Name                   "  \
 
 #define PRINT_TERM       "\n------------------------------------------------------------" \
 
@@ -494,6 +495,20 @@ unsigned long sym_binds[] = {
     STB_WEAK
 };
 
+const char *sym_visi_names[] = {
+    "DEFAULT",
+    "INTERNAL",
+    "HIDDEN",
+    "PROTECTED"
+};
+
+unsigned long sym_visi[] = {
+    STV_DEFAULT,
+    STV_INTERNAL,
+    STV_HIDDEN,
+    STV_PROTECTED
+};
+
 void print_usage(void);
 
 
@@ -568,7 +583,7 @@ class Meta {
 
         std::map<unsigned long, std::string> symbol_types;
         std::map<unsigned long, std::string> symbol_binds;
-        // XXX visibility
+        std::map<unsigned long, std::string> symbol_visi;
 
         std::map<std::string, std::string> section_links;
         std::map<std::string, std::string> section_infos;
