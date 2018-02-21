@@ -128,6 +128,7 @@ void Meta::load_symbols(void)
 
     symbol_types = map_types(sym_names, &(sym_types[0]), SY_TYPES);
     symbol_binds = map_types(sym_bind_names, &(sym_binds[0]), SY_BINDS); 
+    symbol_visi = map_types(sym_visi_names, &(sym_visi[0]), SY_VISIS);
 
     Elf64_Shdr *symtab = sections[".symtab"];
     size_t sym_count = symtab->sh_size / SY_SIZE;
@@ -151,6 +152,7 @@ void Meta::print_symbols(void)
 
         size_t type = ELF64_ST_TYPE(sym->st_info);
         size_t bind = ELF64_ST_BIND(sym->st_info);
+        size_t visi = ELF64_ST_VISIBILITY(sym->st_other);
 
         if (sym->st_value == 0)
             std::cout << "0x000000" << " ";
@@ -163,6 +165,7 @@ void Meta::print_symbols(void)
             std::cout << symbol_types[type] << "\t";
 
         std::cout << symbol_binds[bind] << "\t";
+        std::cout << "  " << symbol_visi[visi] << "  ";
 
         switch (type) {
             case (STT_OBJECT):
