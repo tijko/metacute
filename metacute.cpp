@@ -122,26 +122,30 @@ void Meta::print_elf(void)
                              elf.elf_hdr.e_shoff);
 }
 
-void Meta::load_symbols(void)
+void Meta::print_symbols(void)
 {
-    load_sections();
+    std::map<unsigned long, std::string> symbol_types = map_types(sym_names, 
+                                                                &(sym_types[0]), 
+                                                                      SY_TYPES);
 
-    symbol_types = map_types(sym_names, &(sym_types[0]), SY_TYPES);
-    symbol_binds = map_types(sym_bind_names, &(sym_binds[0]), SY_BINDS); 
-    symbol_visi = map_types(sym_visi_names, &(sym_visi[0]), SY_VISIS);
+    std::map<unsigned long, std::string> symbol_binds = map_types(sym_bind_names, 
+                                                                &(sym_binds[0]), 
+                                                                      SY_BINDS); 
+
+    std::map<unsigned long, std::string> symbol_visi = map_types(sym_visi_names, 
+                                                               &(sym_visi[0]), 
+                                                                    SY_VISIS);
 
     Elf64_Shdr *symtab = sections[".symtab"];
     size_t sym_count = symtab->sh_size / SY_SIZE;
 
     Elf64_Sym *sym = (Elf64_Sym *) &(binary[symtab->sh_offset]);
 
+    std::vector<Elf64_Sym *> symbols;
+
     while (sym_count--)
         symbols.push_back(sym++);
-}
 
-void Meta::print_symbols(void)
-{
-    load_symbols();
     Elf64_Shdr *strtab = sections[".strtab"];
     size_t str_offset = strtab->sh_offset;
 
@@ -185,8 +189,19 @@ void Meta::print_symbols(void)
 
 void Meta::print_dynamics(void)
 {
-    load_sections();
-    load_dynamics();
+    std::map<unsigned long, std::string> dynamic_tags = map_types(dt_names, 
+                                                                &(dt_tags[0]), 
+                                                                    DT_TYPES);
+    Elf64_Shdr *dynsec = sections[".dynamic"];
+    size_t dynamic_offset = dynsec->sh_offset;
+    size_t dynamic_count = dynsec->sh_size / DH_SIZE;
+
+    Elf64_Dyn *dynamic = (Elf64_Dyn *) &(binary[dynamic_offset]);
+
+    std::vector<Elf64_Dyn *> dynamics;
+
+    while (dynamic_count-- && dynamic->d_tag != DT_NULL)
+        dynamics.push_back(dynamic++);
 
     int dynstr = sections[".dynstr"]->sh_offset;
 
@@ -314,34 +329,20 @@ void Meta::print_dynamics(void)
     std::cout << std::endl;
 }
 
-void Meta::load_dynamics(void)
+void Meta::print_segments(void)
 {
-    dynamic_tags = map_types(dt_names, &(dt_tags[0]), DT_TYPES);
-    Elf64_Shdr *dynsec = sections[".dynamic"];
-    size_t dynamic_offset = dynsec->sh_offset;
-    size_t dynamic_count = dynsec->sh_size / DH_SIZE;
-
-    Elf64_Dyn *dynamic = (Elf64_Dyn *) &(binary[dynamic_offset]);
-    while (dynamic_count-- && dynamic->d_tag != DT_NULL)
-        dynamics.push_back(dynamic++);
-}
-
-void Meta::load_segments(void)
-{
-    segment_types = map_types(ph_names, (unsigned long *) &(ph_types[0]),
-                                                               PH_TYPES);
+    std::map<unsigned long, std::string> segment_types = map_types(ph_names, 
+                                                                 &(ph_types[0]),
+                                                                      PH_TYPES);
 
     int phnum = elf.elf_hdr.e_phnum;
 
     Elf64_Phdr *segment_array = (Elf64_Phdr *) &binary[elf.elf_hdr.e_phoff];
 
+    std::vector<Elf64_Phdr *> segments;
+
     while (phnum--)
         segments.push_back(segment_array++);
-}
-
-void Meta::print_segments(void)
-{
-    load_segments();
 
     for (auto segment : segments) {
         std::string name = segment_types[segment->p_type];
@@ -395,7 +396,8 @@ void Meta::load_sections(void)
                            (elf.elf_hdr.e_shstrndx * SH_SIZE);
     size_t str_tbl_offset = ((Elf64_Shdr *) &binary[str_sec_offset])->sh_offset;
 
-    section_types = map_types(sh_names, sh_types, SH_TYPES); 
+    section_types = map_types(sh_names, sh_types, SH_TYPES);
+
     // Section-Header Table is 1-based table (not 0)
     // The first entry in the table is 0'd out
     for (Elf64_Shdr *shdr=(Elf64_Shdr *) &binary[elf.elf_hdr.e_shoff + SH_SIZE];
@@ -443,7 +445,6 @@ void Meta::display_section_chars(int idx, size_t sec_offset)
 void Meta::print_sections(void)
 {
     std::cout << std::endl << "File: " << file << std::endl << std::endl;
-    load_sections();
 
     for (auto item : sections) {
         print_section_hdr(item.second, item.first);
@@ -540,6 +541,7 @@ Meta::Meta(const char *file, size_t file_size)
     file_handle.close();
 
     elf = Elf(binary);
+    load_sections();
 }
 
 int main(int argc, char *argv[])
