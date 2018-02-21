@@ -532,16 +532,11 @@ class Elf {
 class Meta {
 
     public:
-        // public v. private (review)
         Meta(const char *file, size_t file_size);
         std::string file;
         std::vector<uint8_t> binary;
 
-        // XXX create an opaque type and hold just single vector
         std::map<std::string, Elf64_Shdr *> sections;
-        std::vector<Elf64_Dyn *> dynamics;
-        std::vector<Elf64_Phdr *> segments; 
-        std::vector<Elf64_Sym *> symbols;
 
         void print_elf(void);
         void print_sections(void);
@@ -555,10 +550,6 @@ class Meta {
         Elf elf;
         void load_elf(void);
         void load_sections(void); 
-        void load_segments(void); 
-        void load_dynamics(void);
-        void load_symbols(void);
-
         void print_section_hdr(Elf64_Shdr *section, std::string section_name);
         void display_section_chars(int idx, size_t sec_offset);
         std::string get_section_str(size_t sh_idx, size_t str_tbl_offset);
@@ -572,21 +563,9 @@ class Meta {
          * the above will be relavent when the other flags
          * for specific sections/segments are passed on cmd-line
          */
-
-        // XXX as noted above cut down on structures by using generics
-        // and passing along function ptrs
-        std::map<unsigned long, std::string> segment_types; 
-        
-        std::map<unsigned long, std::string> section_types;
-        
-        std::map<unsigned long, std::string> dynamic_tags;
-
-        std::map<unsigned long, std::string> symbol_types;
-        std::map<unsigned long, std::string> symbol_binds;
-        std::map<unsigned long, std::string> symbol_visi;
-
         std::map<std::string, std::string> section_links;
         std::map<std::string, std::string> section_infos;
+        std::map<unsigned long, std::string> section_types;
 
         std::map<unsigned long, std::string> 
         map_types(const char **type_names, unsigned long *type_values, 
