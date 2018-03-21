@@ -18,6 +18,7 @@ void print_usage(void)
     std::cout << "\t -S dump program sections" << std::endl;
     std::cout << "\t -p dump program segments" << std::endl;
     std::cout << "\t -s dump program symbols" << std::endl;
+    std::cout << "\t -c <section> dump passed section" << std::endl;
 }
 
 Elf::Elf(std::vector<uint8_t> binary)
@@ -380,6 +381,7 @@ void Meta::print_section_hdr(Elf64_Shdr *section, std::string section_name)
         std::cout << "[" << flag << "] ";
 
     printf(PRINT_TERM);
+    print_section_data(section);
 }
 
 std::string Meta::get_section_str(size_t sh_idx, size_t str_tbl_offset)
@@ -442,50 +444,67 @@ void Meta::display_section_chars(int idx, size_t sec_offset)
     }
 }
 
+void Meta::print_section(const char *section)
+{
+    if (!section)
+        ERROR("Provide section!");
+
+    Elf64_Shdr *s = sections[section];
+    
+    if (!s)
+        ERROR("Section not found!");
+
+    print_section_hdr(s, section);
+    std::cout << std::endl;
+}
+
 void Meta::print_sections(void)
 {
     std::cout << std::endl << "File: " << file << std::endl << std::endl;
 
+    Elf64_Shdr *bss_sec = sections[".bss"];
+    sections.erase(".bss");
+    print_section_hdr(bss_sec, ".bss");
+    std::cout << std::endl;
+
     for (auto item : sections) {
         print_section_hdr(item.second, item.first);
 
-        if (!(item.first.compare(".bss"))) {
-            std::cout << std::endl;
-            continue;
-        }
-
-        size_t sec_offset = item.second->sh_offset;
-        int section_size = (int) item.second->sh_size;
-
-        for (int idx=0; idx <= section_size; idx++) {
-            if (!(idx & ALIGN_OUTPUT) || idx == section_size) {
-                if (idx)
-                    display_section_chars(idx, sec_offset);
-                if (idx != section_size) {
-                    if (item.second->sh_addr == 0)
-                        std::cout << std::endl << "xxxxxx ";
-                    else {
-                        std::cout << std::endl << std::setbase(16);
-                        std::cout << item.second->sh_addr + idx;
-                        std::cout << ' ';
-                    }
-                }
-            } else if (idx && !(idx % 4))
-                std::cout << ' ';
-
-            if (idx < section_size) {
-                if (binary[sec_offset + idx] < 16) { 
-                    std::cout << '0' << std::setbase(16);
-                    std::cout << (int) binary[sec_offset + idx];
-                } else {
-                    std::cout << std::setbase(16);
-                    std::cout << (int) binary[sec_offset + idx];
-                }
-            }
-        }
-
         std::cout << std::endl << std::endl;
         std::cout << std::setw(0);
+    }
+}
+
+void Meta::print_section_data(Elf64_Shdr *section)
+{
+    size_t sec_offset = section->sh_offset;
+    int section_size = (int) section->sh_size;
+
+    for (int idx=0; idx <= section_size; idx++) {
+        if (!(idx & ALIGN_OUTPUT) || idx == section_size) {
+            if (idx)
+                display_section_chars(idx, sec_offset);
+            if (idx != section_size) {
+                if (section->sh_addr == 0)
+                    std::cout << std::endl << "xxxxxx ";
+                else {
+                    std::cout << std::endl << std::setbase(16);
+                    std::cout << section->sh_addr + idx;
+                    std::cout << ' ';
+                }
+            }
+        } else if (idx && !(idx % 4))
+            std::cout << ' ';
+
+        if (idx < section_size) {
+            if (binary[sec_offset + idx] < 16) { 
+                std::cout << '0' << std::setbase(16);
+                std::cout << (int) binary[sec_offset + idx];
+            } else {
+                std::cout << std::setbase(16);
+                std::cout << (int) binary[sec_offset + idx];
+            }
+        }
     }
 }
 
@@ -546,13 +565,10 @@ Meta::Meta(const char *file, size_t file_size)
 
 int main(int argc, char *argv[])
 {
-    if (argc ^ 3)
-        ERROR("Invalid options!");
-
-    const char *options = "deSps";
+    const char *options = "deSpsc:";
     char opt = getopt(argc, argv, options);
     
-    const char *file = argv[2];
+    const char *file = argv[argc - 1];
     
     struct stat st;
     if (stat(file, &st) < 0)
@@ -576,6 +592,9 @@ int main(int argc, char *argv[])
             break;
         case ('s'):
             metacute.print_symbols();
+            break;
+        case ('c'):
+            metacute.print_section(optarg);
             break;
         default:
             ERROR("Invalid options!");
