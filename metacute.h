@@ -540,6 +540,7 @@ class Meta {
 
         void print_elf(void);
         void print_sections(void);
+        void print_section(const char *section);
         void print_segments(void);
         void print_dynamics(void);
         void print_symbols(void);
@@ -551,6 +552,7 @@ class Meta {
         void load_elf(void);
         void load_sections(void); 
         void print_section_hdr(Elf64_Shdr *section, std::string section_name);
+        void print_section_data(Elf64_Shdr *section);
         void display_section_chars(int idx, size_t sec_offset);
         std::string get_section_str(size_t sh_idx, size_t str_tbl_offset);
 
